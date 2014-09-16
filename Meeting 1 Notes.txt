@@ -1,0 +1,5 @@
+- Learn to work in PDDL
+- We need to ask professor to clarify exactly what he wants out of our code implementations
+- Need to decided on a programming language to work in
+      - Python is nice to quickly write/test with
+      - Java/C/C++ are options.
