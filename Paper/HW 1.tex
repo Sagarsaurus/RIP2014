@@ -1,0 +1,33 @@
+\documentclass[]{article}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{ tipa }
+\usepackage{amssymb}
+\usepackage{url,hyperref}
+\usepackage{enumerate}
+%opening
+\title{RIP HW 1}
+\author{Inder Dhir, Ajmal Kunnummal, Sagar Laud, James Liu, Richard Stauffer}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Problem 1}
+	\begin{enumerate}[(a)]
+	\item \textbf{Compare the Methods of the Two Planners:}\\
+	Blackbox Planner\\
+		This planner operated by turning the given problem into a set of boolean satisfiability problems through two mechanisms. The front end is a graphplan technique where instead of state nodse and edges representing possible traversal, we have nodes of actions/facts and edges from facts to actions or from actions to facts affected by said action. Arranged in an alternating Facts, to possible actions, back to facts, fashion it also uses backward chaining and iterative depth porbing to keep from exporing extraneous nodes. \\
+	
+	VHPOP Planner\\
+		Sagar or someone, if you could have a look at this one. I am having some difficulties understanding how exactly it works and I don't want to just copy/paste an answer. 	
+	
+	\item \textbf{Which Planner was Fastest:}\\
+	Both took very little time, as this is a relatively small problem in terms of search space, but  the Blackbox planner was undoubtedly faster at 12 milliseconds versus the 5160 milliseconds of the VHPOP planner. 
+	
+	\item \textbf{Why Might this Planner be Faster?}\\
+	
+	\end{enumerate}
+\end{document}
