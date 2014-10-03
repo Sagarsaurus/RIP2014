@@ -19,13 +19,13 @@
 	\begin{enumerate}[(a)]
 	\item \textbf{Compare the Methods of the Two Planners:}\\
 	Blackbox Planner\\
-		This planner operated by turning the given problem into a set of boolean satisfiability problems through two mechanisms. The front end is a graphplan technique where instead of state nodse and edges representing possible traversal, we have nodes of actions/facts and edges from facts to actions or from actions to facts affected by said action. Arranged in an alternating Facts, to possible actions, back to facts, fashion it also uses backward chaining and iterative depth porbing to keep from exporing extraneous nodes. \\
+		This planner operated by turning the given problem into a set of boolean satisfiability problems through two mechanisms. The front end is a graphplan technique where instead of state nodes and edges representing possible traversal, we have nodes of actions/facts and edges from facts -> actions or from actions -> facts affected by said action. Arranged in an alternating fashion: Facts, to possible actions, back to facts. It also uses backward chaining and iterative depth probing to keep from exploring too many extraneous nodes. \\
 	
 	VHPOP Planner\\
-		Sagar or someone, if you could have a look at this one. I am having some difficulties understanding how exactly it works and I don't want to just copy/paste an answer. 	
+		VHPOP is a partial-order planner. This means it generates a lists of actions necessary to get to the goal, only constraining their order when absolutely necessary (One has preconditions, an earlier action must synthesize) It operates on a system of clever heuristics, and evaluating dead end states.
 	
 	\item \textbf{Which Planner was Fastest:}\\
-	Both took very little time, as this is a relatively small problem in terms of search space, but  the Blackbox planner was undoubtedly faster at 12 milliseconds versus the 5160 milliseconds of the VHPOP planner. 
+	Both took very little time, as this is a relatively small problem in terms of search space, but  the Blackbox planner was still undoubtedly faster at 12 milliseconds versus the 5160 milliseconds of the VHPOP planner. 
 	
 	\item \textbf{Why Might this Planner be Faster?}\\
 	
