@@ -8,6 +8,7 @@ import java.util.List;
 public interface State {
     public List<State> neighbours();
     public Object[] getActions();
+    public boolean same(State state);
     public void setTentativeDistance(double distance);
     public double getTentativeDistance();
 }

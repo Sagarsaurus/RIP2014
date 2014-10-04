@@ -43,9 +43,13 @@ public class Problem {
     }
     public String plan(Planner planner, SokobanHeuristic heuristic){
         Object[] path = planner.run(start, goal, heuristic);
-        StringBuilder actions = new StringBuilder();
-        for(Object action: path)
-            actions.append(action);
-        return  actions.toString();
+        if(path == null)
+            return "no path";
+        else {
+            StringBuilder actions = new StringBuilder();
+            for (Object action : path)
+                actions.append(action + " ");
+            return actions.toString();
+        }
     }
 }

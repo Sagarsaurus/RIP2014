@@ -1,4 +1,6 @@
 package rip.hw1.planner;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.LinkedList;
 /**
@@ -9,12 +11,12 @@ public class AStar implements Planner {
     @Override
     public Object[] run(State start, State end, Heuristic heuristic) {
         PriorityQueue<State> pq = new PriorityQueue<State>();
-        LinkedList<State> visited = new LinkedList<State>();
+        List<State> visited = new ArrayList<State>();
         pq.add(start);
         while(!pq.isEmpty()) {
             State current = pq.poll();
-            if(current.equals(end)) {
-                return end.getActions();
+            if(current.same(end)) {
+                return current.getActions();
             }
             visited.add(current);
             for(State s : current.neighbours()) {
