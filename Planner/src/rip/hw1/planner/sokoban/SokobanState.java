@@ -46,6 +46,7 @@ public class SokobanState implements State {
     private int gridW, gridH;
     boolean[][] walls;
     private Action[] fromStart;
+    private double tentativeDistance;
 
     public SokobanState(int gridW, int gridH, boolean[][] walls, String robot, List<String> boxes){
         this.gridW = gridW;
@@ -76,6 +77,7 @@ public class SokobanState implements State {
         }
         fromStart = Arrays.copyOf(state.fromStart, state.fromStart.length + 1);
         fromStart[state.fromStart.length] = action;
+        tentativeDistance = 0;
     }
     public boolean equals(SokobanState state){
         if(!robot.equals(state.robot))
@@ -87,6 +89,19 @@ public class SokobanState implements State {
                 return false;
         }
         return true;
+    }
+    
+    public double getTentativeDistance() {
+        return tentativeDistance;
+    }
+
+    public double setTentativeDistance(double distance) {
+        this.tentativeDistance = distance;
+    }
+    @Override
+    public int compareTo(Object o) {
+        State s = ((State)o);
+        return this.getTentativeDistance() - s.getTentativeDistance();
     }
 
     public List<State> neighbours(){
