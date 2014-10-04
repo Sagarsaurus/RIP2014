@@ -1,5 +1,10 @@
-package rip.hw1.planner;
+package rip.hw1.planner.sokoban;
 
+import rip.hw1.planner.Planner;
+import rip.hw1.planner.State;
+import rip.hw1.planner.sokoban.SokobanState;
+
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -26,13 +31,20 @@ public class Problem {
                 walls[i][j] = Integer.parseInt(line[j]) == 0;
             }
         }
-        start = new SokobanState(walls, robot, boxes);
-        goal = new SokobanState(walls, robot, goals);
+        start = new SokobanState(x, y, walls, robot, boxes);
+        goal = new SokobanState(x, y, walls, robot, goals);
     }
     public State getStart(){
         return start;
     }
     public State getGoal(){
         return goal;
+    }
+    public String plan(Planner planner, SokobanHeuristic heuristic){
+        Action[] path = (Action[]) planner.run(start, goal, heuristic);
+        StringBuilder actions = new StringBuilder();
+        for(Action action: path)
+            actions.append(action);
+        return  actions.toString();
     }
 }

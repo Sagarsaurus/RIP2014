@@ -1,5 +1,8 @@
 package rip.hw1.planner;
 
+import rip.hw1.planner.sokoban.Problem;
+import rip.hw1.planner.sokoban.SokobanHeuristic;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -15,7 +18,7 @@ public class Main {
         try {
             problem = new Problem(new Scanner(new File(fileName)));
             Planner planner = new AStar();
-            System.out.println(planner.run(problem.getStart(), problem.getGoal()));
+            System.out.println(problem.plan(planner, new SokobanHeuristic()));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

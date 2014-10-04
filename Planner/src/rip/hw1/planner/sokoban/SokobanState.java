@@ -1,12 +1,16 @@
-package rip.hw1.planner;
+package rip.hw1.planner.sokoban;
 
+import rip.hw1.planner.State;
+
+import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by ajmalkunnummal on 10/3/14.
  */
-public class SokobanState implements State{
+public class SokobanState implements State {
     private class Item implements Comparable{
         private String name;
         private int x, y;
@@ -35,11 +39,13 @@ public class SokobanState implements State{
             return name.compareTo( ((Item)item).name);
         }
     }
+    private enum Action {LEFT, RIGHT, UP, DOWN}
     private Item robot;
     private Item[] boxes; // Always kept sorted
     private Item[][] itemGrid;
     private int gridW, gridH;
     boolean[][] walls;
+    private Action[] fromStart;
 
     public SokobanState(int gridW, int gridH, boolean[][] walls, String robot, List<String> boxes){
         this.gridW = gridW;
@@ -54,8 +60,10 @@ public class SokobanState implements State{
             String box[] = boxes.get(i).split(" ");
             this.boxes[i] = new Item(box[0], Integer.parseInt(box[1]), Integer.parseInt(box[2]), false, true);
         }
+        Arrays.sort(this.boxes);
+        fromStart = new Action[0];
     }
-    public SokobanState(SokobanState state){
+    public SokobanState(SokobanState state, Action action){
         gridW = state.gridW;
         gridH = state.gridH;
         itemGrid = new Item[gridW][gridH];
@@ -66,6 +74,8 @@ public class SokobanState implements State{
         for(int i = 0; i < boxes.length; i++) {
             boxes[i] = new Item(state.boxes[i]);
         }
+        fromStart = Arrays.copyOf(state.fromStart, state.fromStart.length + 1);
+        fromStart[state.fromStart.length] = action;
     }
     public boolean equals(SokobanState state){
         if(!robot.equals(state.robot))
@@ -83,12 +93,12 @@ public class SokobanState implements State{
         List<State> neighbours = new ArrayList<State>();
         if(!walls[robot.x + 1][robot.y]) {
             if(itemGrid[robot.x + 1][robot.y] == null) {
-                SokobanState n = new SokobanState(this);
+                SokobanState n = new SokobanState(this, Action.RIGHT);
                 n.move(n.robot, 1, 0);
                 neighbours.add(n);
             }
             else if(!walls[robot.x + 2][robot.y] && itemGrid[robot.x + 2][robot.y] == null) {
-                SokobanState n = new SokobanState(this);
+                SokobanState n = new SokobanState(this, Action.RIGHT);
                 n.move(itemGrid[robot.x + 1][robot.y], 1, 0);
                 n.move(n.robot, 1, 0);
                 neighbours.add(n);
@@ -96,12 +106,12 @@ public class SokobanState implements State{
         }
         if(!walls[robot.x - 1][robot.y]) {
             if(itemGrid[robot.x - 1][robot.y] == null) {
-                SokobanState n = new SokobanState(this);
+                SokobanState n = new SokobanState(this, Action.LEFT);
                 n.move(n.robot, -1, 0);
                 neighbours.add(n);
             }
             else if(!walls[robot.x - 2][robot.y] && itemGrid[robot.x - 2][robot.y] == null) {
-                SokobanState n = new SokobanState(this);
+                SokobanState n = new SokobanState(this, Action.LEFT);
                 n.move(itemGrid[robot.x - 1][robot.y], -1, 0);
                 n.move(n.robot, -1, 0);
                 neighbours.add(n);
@@ -109,12 +119,12 @@ public class SokobanState implements State{
         }
         if(!walls[robot.x][robot.y + 1]) {
             if(itemGrid[robot.x][robot.y + 1] == null) {
-                SokobanState n = new SokobanState(this);
+                SokobanState n = new SokobanState(this, Action.UP);
                 n.move(n.robot, 0, 1);
                 neighbours.add(n);
             }
             else if(!walls[robot.x][robot.y + 2] && itemGrid[robot.x][robot.y + 2] == null) {
-                SokobanState n = new SokobanState(this);
+                SokobanState n = new SokobanState(this, Action.UP);
                 n.move(itemGrid[robot.x][robot.y + 1], 0, 1);
                 n.move(n.robot, 0, 1);
                 neighbours.add(n);
@@ -122,12 +132,12 @@ public class SokobanState implements State{
         }
         if(!walls[robot.x][robot.y - 1]) {
             if(itemGrid[robot.x][robot.y - 1] == null) {
-                SokobanState n = new SokobanState(this);
+                SokobanState n = new SokobanState(this, Action.DOWN);
                 n.move(n.robot, 0, -1);
                 neighbours.add(n);
             }
             else if(!walls[robot.x][robot.y - 2] && itemGrid[robot.x][robot.y - 2] == null) {
-                SokobanState n = new SokobanState(this);
+                SokobanState n = new SokobanState(this, Action.DOWN);
                 n.move(itemGrid[robot.x][robot.y + 1], 0, -1);
                 n.move(n.robot, 0, -1);
                 neighbours.add(n);
@@ -141,5 +151,9 @@ public class SokobanState implements State{
         item.x += x;
         item.y += y;
         itemGrid[item.x][item.y] = item;
+    }
+
+    public Object[] getActions() {
+        return fromStart;
     }
 }

@@ -5,7 +5,7 @@ package rip.hw1.planner;
  */
 public class AStar implements Planner {
     @Override
-    public String run(State start, State end) {
-        return null;
+    public Object[] run(State start, State end, Heuristic heuristic) {
+        return start.getActions();
     }
 }
