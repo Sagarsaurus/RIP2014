@@ -42,9 +42,9 @@ public class Problem {
         return goal;
     }
     public String plan(Planner planner, SokobanHeuristic heuristic){
-        Action[] path = (Action[]) planner.run(start, goal, heuristic);
+        Object[] path = planner.run(start, goal, heuristic);
         StringBuilder actions = new StringBuilder();
-        for(Action action: path)
+        for(Object action: path)
             actions.append(action);
         return  actions.toString();
     }
