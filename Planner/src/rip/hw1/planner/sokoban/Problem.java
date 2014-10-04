@@ -17,6 +17,7 @@ public class Problem {
     private boolean[][] walls;
     public Problem(Scanner problem){
         int x = problem.nextInt(), y = problem.nextInt(), n = problem.nextInt();
+        problem.nextLine();
         String robot = problem.nextLine();
         List<String>    boxes = new ArrayList<String>(n),
                         goals = new ArrayList<String>(n);
@@ -25,10 +26,10 @@ public class Problem {
         for(int i = 0; i < n; i++)
             goals.add(problem.nextLine());
         walls = new boolean[x][y];
-        for(int i = 0; i < x; i++) {
+        for(int i = 0; i < y; i++) {
             String line[] = problem.nextLine().split(" ");
-            for(int j = 0; j < y; j++) {
-                walls[i][j] = Integer.parseInt(line[j]) == 0;
+            for(int j = 0; j < x; j++) {
+                walls[j][i] = Integer.parseInt(line[j]) == 0;
             }
         }
         start = new SokobanState(x, y, walls, robot, boxes);
