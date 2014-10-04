@@ -11,7 +11,7 @@
 			(adjacent A1 B1 east) (adjacent A2 B2 east) (adjacent A3 B3 east)
 			(adjacent B1 A1 west) (adjacent B2 A2 west) (adjacent B3 A3 west)
 			(adjacent A5 B5 east) (adjacent B2 C2 east) (adjacent B3 C3 east) 
-			(adjacent B5 A5 west) (adjacent C2 B2 west) (adjacent C3 B3 east) 
+			(adjacent B5 A5 west) (adjacent C2 B2 west) (adjacent C3 B3 west) 
 			(adjacent C2 D2 east) (adjacent C3 D3 east) 
 			(adjacent D2 C2 west) (adjacent D3 C3 east)
 	)
