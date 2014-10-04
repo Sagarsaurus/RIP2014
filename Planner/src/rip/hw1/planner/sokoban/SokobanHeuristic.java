@@ -9,13 +9,8 @@ import static java.lang.Math.*;
  */
 public class SokobanHeuristic implements Heuristic {
     @Override
-    public double estimate(State start, State goal) {
-    	double sum=0;
-        for(i=0;i<start.boxes.length;i++){
-        	sum+=Math.abs(start.boxes[i].x-goal.boxes[i].x)
-        	sum+=Math.abs(start.boxes[i].y-goal.boxes[i].y)
-        }
-        return sum;
-        
+    public double estimate(State s, State g) {
+        return SokobanState.manhDistance((SokobanState) s, (SokobanState) g);
+
     }
 }

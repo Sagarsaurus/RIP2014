@@ -14,7 +14,7 @@ public class Main {
         Problem problem;
         if(args.length == 1)
             fileName = args[0];
-        else fileName = "2.txt";
+        else fileName = "3.txt";
         try {
             problem = new Problem(new Scanner(new File(fileName)));
             Planner planner = new AStar();

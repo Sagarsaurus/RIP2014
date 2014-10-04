@@ -1,5 +1,6 @@
 package rip.hw1.planner.sokoban;
 
+import rip.hw1.planner.Heuristic;
 import rip.hw1.planner.State;
 
 import javax.swing.*;
@@ -194,5 +195,14 @@ public class SokobanState implements State, Comparable {
 
     public Object[] getActions() {
         return fromStart;
+    }
+
+    public static int manhDistance(SokobanState start, SokobanState goal){
+        int sum = 0;
+        for(int i = 0; i < start.boxes.length; i++){
+            sum += Math.abs(start.boxes[i].x - goal.boxes[i].x);
+            sum += Math.abs(start.boxes[i].y - goal.boxes[i].y);
+        }
+        return sum;
     }
 }
