@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by ajmalkunnummal on 10/3/14.
  */
-public class SokobanState implements State {
+public class SokobanState implements State, Comparable {
     private class Item implements Comparable{
         private String name;
         private int x, y;
@@ -95,13 +95,13 @@ public class SokobanState implements State {
         return tentativeDistance;
     }
 
-    public double setTentativeDistance(double distance) {
+    public void setTentativeDistance(double distance) {
         this.tentativeDistance = distance;
     }
-    @Override
+
     public int compareTo(Object o) {
         State s = ((State)o);
-        return this.getTentativeDistance() - s.getTentativeDistance();
+        return Double.compare(this.getTentativeDistance(), s.getTentativeDistance());
     }
 
     public List<State> neighbours(){
