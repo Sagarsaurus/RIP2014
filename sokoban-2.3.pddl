@@ -5,7 +5,7 @@
 	(:init 
 		(robot bot) (block block1) (block block2) (block block3) (locatedAt bot B3) (locatedAt block1 H3) (locatedAt block2 F3) (locatedAt block3 D3)
 		(free A1) (free A2) (free A3) (free B1) (free C1) (free C2) (free C3)
-		 (free D1) (free D3) (free E1) (free E2) (free E3) (free F1) (free G1)
+		 (free D1) (free E1) (free E2) (free E3) (free F1) (free G1)
 		 (free G2) (free G3) (free G4) (free G5) (free G6) (free H6) (free I3)
 		 (free I4) (free I5) (free I6) 
 		 (adjacent A1 A2 north) (adjacent A2 A3 north) (adjacent A2 A1 south) (adjacent A3 A2 south)  	
