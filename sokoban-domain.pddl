@@ -1,5 +1,4 @@
 (define (domain sokoban-domain)
-	(:requirements :strips)
 	(:predicates (robot ?x) (block ?x) (locatedAt ?x ?loc) (free ?loc) (adjacent ?loc1 ?loc2 ?dir))
 	(:action move
 		:parameters (?dir ?robot ?loc1 ?loc2)
@@ -8,7 +7,7 @@
 							(adjacent ?loc1 ?loc2 ?dir)
 							(free ?loc2))
 		:effect (and (not (locatedAt ?robot ?loc1))
-						(locatedAt ?loc2)
+						(locatedAt ?robot ?loc2)
 						(not (free ?loc2))
 						(free ?loc1))
 	)
