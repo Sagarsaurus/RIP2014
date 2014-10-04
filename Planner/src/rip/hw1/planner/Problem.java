@@ -8,7 +8,12 @@ import java.util.Scanner;
  */
 public class Problem {
     State start, goal;
+    boolean[][] domain;
     public Problem(Scanner problem){
 
+    }
+    public State[] neighbours(State state){
+
+        return new State[0];
     }
 }
