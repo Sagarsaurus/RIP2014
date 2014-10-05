@@ -2,3 +2,4 @@
 blackbox.exe
 *.swo
 *.class
+*.stackdump
