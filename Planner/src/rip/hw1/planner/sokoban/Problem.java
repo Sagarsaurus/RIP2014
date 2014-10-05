@@ -47,6 +47,7 @@ public class Problem {
             return "no path";
         else {
             StringBuilder actions = new StringBuilder();
+            actions.append("Length: " + path.length + "\nPath: ");
             for (Object action : path)
                 actions.append(action + " ");
             return actions.toString();
