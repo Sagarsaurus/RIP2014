@@ -12,4 +12,4 @@ goal = Goal('hanoi-goal')
 goal.on = {'d1':'d2', 'd2':'d3', 'd3':'d4', 'd4':'d5', 'd5':'d6', 'd6':'d7', 'd7':'d8', 'd8':'d9', 'd9':'d10', 'd10':'d11', 'd11':'d12','d12':'p1'}
 goal.clear = ['d1', 'p2', 'p3']
 
-pyhop(state, [('move_disks', state, goal)], verbose=1)
+pyhop(state, [('move_disks', goal)], verbose=1)
