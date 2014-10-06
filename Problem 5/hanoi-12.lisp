@@ -1,3 +1,5 @@
+(in-package :shop2-user)
+
 (defproblem hanoi-12 hanoi-domain
 	(
 	 (disk d1) (size d1 1)

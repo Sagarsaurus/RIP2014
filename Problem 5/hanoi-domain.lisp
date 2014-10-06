@@ -3,7 +3,7 @@
 (defun define-hanoi-domain ()
 	(let (( *define-silently* t))
 		(defdomain hanoi-domain (
-			(:operator (move-disk ?disk ?below ?new-below ?source ?dest)
+			(:operator (!move-disk ?disk ?below ?new-below ?source ?dest)
 				(
 				 (disk ?disk) 			;precondition
 				 (size ?disk ?sX)
