@@ -1,7 +1,8 @@
 import pyhop
 
 def move_disk(state, disk, below, new_below, source, dest):
-	if(state.on[disk] == below &&
+	if(state.disk[disk] == True &&
+	   state.on[disk] == below &&
 	   state.top[source] == disk &&
 	   state.top[dest] == new_below &&
 	   state.size[disk] < state.size[below] &&
