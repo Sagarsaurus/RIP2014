@@ -1,21 +1,18 @@
 import pyhop
 
 def move_disk(state, disk, below, new_below, source, dest):
-	if(state.disk[disk] == True and 
-	   state.on[disk] == below and
-	   state.top[source] == disk and
-	   state.top[dest] == new_below and
-	   state.size[disk] < state.size[below] and
-	   state.size[disk] < state.size[new_below] and
-	   below != new_below and
-	   disk != below and
-	   disk != new_below and
-	   source != dest):
-		state.on[disk] = new_below
-		state.top[source] = below
-		state.top[dest] = disk
-	else:
-		print 'something goofed'
+    print disk, below, new_below, source, dest, state.on[disk], state.top[source], state.top[dest]
+    if(disk in state.disk and 
+       state.top[source] == disk and
+       state.top[dest] == new_below and
+       state.size[disk] < state.size[new_below] and
+       below != new_below):
+    	state.on[disk] = new_below
+    	state.top[source] = below
+    	state.top[dest] = disk
+    	return state
+    else:
+        return False
 
 pyhop.declare_operators(move_disk)
 
