@@ -8,8 +8,8 @@ def move_disk(state, disk, below, new_below):
        state.size[disk] < state.size[new_below] and
        below != new_below):
     	state.on[disk] = new_below
-    	state.top[source] = below
-    	state.top[dest] = disk
+    	state.clear -= [new_below]
+    	state.clear += [below]
     	return state
     else:
         return False
