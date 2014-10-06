@@ -42,7 +42,7 @@ b)
 
 c)
 
-Our planner uses an A* search with some pruning. It is complete because the search space has every unique state except the pruned states which are provably never gonna lead to the goal state (we explain why in 3 d) )
+Our planner uses an A* search with some pruning. It is complete because the search space has every unique state except the pruned states which are provably never going to lead to the goal state (we explain why in 3 d) )
 
 d)
 
@@ -52,4 +52,4 @@ Our heuristic (rip.hw1.planner.sokoban.SokobanHeuristic) calculates the sum of t
 
 In addition to the heuristic, we also prune the search tree that improves performance a lot, especially for the challenge problem. We make the observation that if you 'jam' one of the boxes anywhere on the map except a goal position, there is no way a solution can be found, no matter what you do. We also make the observation that a bo is jammed when there is a wall or another jammed box on at least two of its adjacent sides. The relavant methods that implement this are in rip.hw1.planner.sokoban.SokobanHeuristic. The method names are canReach, jammed and recJammed.
 
-canReach checks weather any of the boxes in the state are 'jammed'. jammed and recJammed checks weather a particular box is jammed. Because to know whether any box is jammed, you need to know whether a neighboring box is jammed, the algorithm is recursive. 
+canReach checks weather any of the boxes in the state are 'jammed'. jammed and recJammed checks weather a particular box is jammed. Because to know whether any box is jammed, you need to know whether a neighboring box is jammed, the algorithm is recursive.
