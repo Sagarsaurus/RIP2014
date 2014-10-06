@@ -41,16 +41,7 @@ public class Problem {
     public State getGoal(){
         return goal;
     }
-    public String plan(Planner planner, SokobanHeuristic heuristic){
-        Object[] path = planner.run(start, goal, heuristic);
-        if(path == null)
-            return "no path";
-        else {
-            StringBuilder actions = new StringBuilder();
-            actions.append("Length: " + path.length + "\nPath: ");
-            for (Object action : path)
-                actions.append(action + " ");
-            return actions.toString();
-        }
+    public boolean validate(){
+        return start.validate() && goal.validate();
     }
 }

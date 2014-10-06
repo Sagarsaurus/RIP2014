@@ -14,11 +14,12 @@ public class Main {
         Problem problem;
         if(args.length == 1)
             fileName = args[0];
-        else fileName = "3.txt";
+        else fileName = "4.txt";
         try {
             problem = new Problem(new Scanner(new File(fileName)));
-            Planner planner = new AStar();
-            System.out.println(problem.plan(planner, new SokobanHeuristic()));
+            if(problem.validate())
+                System.out.println(new AStar(problem.getStart(), problem.getGoal(), new SokobanHeuristic()));
+            else System.out.println("Input error");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

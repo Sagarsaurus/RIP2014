@@ -11,4 +11,6 @@ public interface State {
     public boolean same(State state);
     public void setTentativeDistance(double distance);
     public double getTentativeDistance();
+    public boolean validate();
+    public boolean canReach(State goal);
 }

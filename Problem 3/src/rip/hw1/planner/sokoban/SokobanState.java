@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by ajmalkunnummal on 10/3/14.
- */
 public class SokobanState implements State, Comparable {
     private class Item implements Comparable{
         private String name;
@@ -37,6 +34,9 @@ public class SokobanState implements State, Comparable {
         public boolean same(Item item){
             return item.name.equals(name);
         }
+        public boolean samePos(Item item){
+            return x == item.x && y == item.y;
+        }
 
         @Override
         public int compareTo(Object item) {
@@ -51,16 +51,16 @@ public class SokobanState implements State, Comparable {
     boolean[][] walls;
     private Action[] fromStart;
     private double tentativeDistance;
+    private boolean named;
 
     public SokobanState(int gridW, int gridH, boolean[][] walls, String robot, List<String> boxes){
         this.gridW = gridW;
         this.gridH = gridH;
         itemGrid = new Item[gridW][gridH];
-//        for(int i = 0; i < gridW; i++)
-//            itemGrid[i] = new Item[gridH];
         this.walls = walls;
         String p[] = robot.split(" ");
         this.robot = new Item("bot", Integer.parseInt(p[0]), Integer.parseInt(p[1]), true, false);
+        this.named = Integer.parseInt(p[2]) == 1;
         itemGrid[this.robot.x][this.robot.y] = this.robot;
         this.boxes = new Item[boxes.size()];
         for(int i = 0; i < this.boxes.length; i++) {
@@ -104,9 +104,17 @@ public class SokobanState implements State, Comparable {
         SokobanState state = (SokobanState) obj;
         if(state.boxes.length != boxes.length)
             return false;
-        for(int i = 0; i < boxes.length; i++){
-            if(!state.boxes[i].equals(boxes[i]))
-                return false;
+        if(named) {
+            for (int i = 0; i < boxes.length; i++) {
+                if (!state.boxes[i].equals(boxes[i]))
+                    return false;
+            }
+        }
+        else {
+            for (Item goal: boxes) {
+                if(state.itemGrid[goal.x][goal.y] == null || !state.itemGrid[goal.x][goal.y].pushable)
+                    return false;
+            }
         }
         return true;
     }
@@ -117,6 +125,29 @@ public class SokobanState implements State, Comparable {
     
     public double getTentativeDistance() {
         return tentativeDistance;
+    }
+
+    @Override
+    public boolean validate() {
+        if(walls[robot.x][robot.y]
+                || itemGrid[robot.x][robot.y] != robot)
+            return false;
+        for(Item box: boxes)
+            if(walls[box.x][box.y]
+                    || itemGrid[box.x][box.y] != box)
+                return false;
+        return true;
+    }
+
+    @Override
+    public boolean canReach(State end) {
+        SokobanState goal = (SokobanState) end;
+        for (Item box: boxes){
+            Item goalb = goal.itemGrid[box.x][box.y];
+            if( (goalb == null || named && !box.same(goalb)) && jammed(box) )
+                return false;
+        }
+        return true;
     }
 
     public void setTentativeDistance(double distance) {
@@ -138,7 +169,7 @@ public class SokobanState implements State, Comparable {
             }
             else if(!walls[robot.x + 2][robot.y] && itemGrid[robot.x + 2][robot.y] == null) {
                 SokobanState n = new SokobanState(this, Action.RIGHT);
-                n.move(itemGrid[robot.x + 1][robot.y], 1, 0);
+                n.move(n.itemGrid[robot.x + 1][robot.y], 1, 0);
                 n.move(n.robot, 1, 0);
                 neighbours.add(n);
             }
@@ -151,7 +182,7 @@ public class SokobanState implements State, Comparable {
             }
             else if(!walls[robot.x - 2][robot.y] && itemGrid[robot.x - 2][robot.y] == null) {
                 SokobanState n = new SokobanState(this, Action.LEFT);
-                n.move(itemGrid[robot.x - 1][robot.y], -1, 0);
+                n.move(n.itemGrid[robot.x - 1][robot.y], -1, 0);
                 n.move(n.robot, -1, 0);
                 neighbours.add(n);
             }
@@ -164,7 +195,7 @@ public class SokobanState implements State, Comparable {
             }
             else if(!walls[robot.x][robot.y + 2] && itemGrid[robot.x][robot.y + 2] == null) {
                 SokobanState n = new SokobanState(this, Action.DOWN);
-                n.move(itemGrid[robot.x][robot.y + 1], 0, 1);
+                n.move(n.itemGrid[robot.x][robot.y + 1], 0, 1);
                 n.move(n.robot, 0, 1);
                 neighbours.add(n);
             }
@@ -177,12 +208,45 @@ public class SokobanState implements State, Comparable {
             }
             else if(!walls[robot.x][robot.y - 2] && itemGrid[robot.x][robot.y - 2] == null) {
                 SokobanState n = new SokobanState(this, Action.UP);
-                n.move(itemGrid[robot.x][robot.y - 1], 0, -1);
+                n.move(n.itemGrid[robot.x][robot.y - 1], 0, -1);
                 n.move(n.robot, 0, -1);
                 neighbours.add(n);
             }
         }
         return neighbours;
+    }
+
+    private boolean recJammed(Item box, Item par){
+        int x = box.x, y = box.y;
+        return  ((
+                    walls[x + 1][y] ||
+                    itemGrid[x + 1][y] != null &&
+                    !itemGrid[x + 1][y].moveable &&
+                    (par != null && itemGrid[x + 1][y].same(par) || recJammed(itemGrid[x + 1][y], box))
+                ) || (
+                    walls[x - 1][y] ||
+                    itemGrid[x - 1][y] != null &&
+                    !itemGrid[x - 1][y].moveable &&
+                    (par != null && itemGrid[x - 1][y].same(par) || recJammed(itemGrid[x - 1][y], box))
+                )) && ((
+                    walls[x][y] ||
+                    itemGrid[x][y + 1] != null &&
+                    !itemGrid[x][y + 1].moveable &&
+                    (par != null && itemGrid[x][y + 1].same(par) || recJammed(itemGrid[x][y + 1], box))
+                ) || (
+                    walls[x][y - 1] ||
+                    itemGrid[x][y - 1] != null &&
+                    !itemGrid[x][y - 1].moveable &&
+                    (par != null && itemGrid[x][y - 1].same(par) || recJammed(itemGrid[x][y - 1], box))
+                ));
+    }
+    private boolean jammed(Item box) {
+        return recJammed(box, null);
+    }
+
+    private boolean strictJammed(int x, int y) {
+        return  (walls[x + 1][y] || walls[x - 1][y]) &&
+                (walls[x][y] || walls[x][y - 1]);
     }
 
     private void move(Item item, int x, int y){
