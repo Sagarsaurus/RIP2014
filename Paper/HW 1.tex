@@ -39,12 +39,14 @@
 	\item \textbf{Which Planner was Fastest:}\\
 	Both took very little time, as this is a relatively small problem in terms of search space, but  the Blackbox planner was still undoubtedly faster at 12 milliseconds versus the 5160 milliseconds of the VHPOP planner. 
 	
-	\item \textbf{Why Might this Planner be Faster?}\\
+	\item \textbf{Why Might this Planner be Faster?}\\ 
+	Much of A*'s speed relies on finding a good heuristic. Since VHPOP uses several generalizable heuristics it might have been able to save time if given a problem specific heuristic.
 	
 	\end{enumerate}
 \section{Problem 2}
 	\begin{enumerate}[(a)]
 		\item \textbf{Solutions for Sokoban Problems:}\\
+		Solutions given by FF Planner\\
 		
 		2.1\\
 		step    0: MOVE SOUTH BOT B4 B3\\
@@ -187,8 +189,13 @@
 		          87: MOVE NORTH BOT G1 G2\\
 		          88: PUSH NORTH BOT BLOCK3 G2 G3 G4\\
 		\item \textbf{Compare two Planners:}\\
+		The FF planner always rounded down to 0.0 seconds for these problems but blackbox took .05 seconds, 12 minutes, and would not solve the 3rd one without manually allowing for larger step size solutions. FF might have performed better due to a breadth first search approach to enforced hill climbing. They both used variations of graphplan so it is safe to assume that blackbox's issues arose with its other half: the boolean constraint satisfiability solver. This is a rather large search space to be defining boolean constraints between objects and that might have been its hang up, it also searches all plans of each length before finding the correct one whereas depth first search has a (small) chance of finding a correct path in its first try. 
 		\item \textbf{Challenges of Expressing in PDDL:}\\
+		Semantic (or rather; logical/numerical based) planning require carefully spelled out relationships between items. In a graph we might have a relationship where if the x coordinate of one item is the same as the x coordinate of another, they are on the same column. Meanwhile geometric constraints are much trickier to define. For instance, parallelism: To do this we have to express each line in formula and determine the slope. A much more involved process. 
+		
+		~~~~~~~PDDL (more importantly in the domain file) contains actions with a precondition and an effect. If we're manipulating geometric objects in a "real" world it quickly becomes difficult to cover all the factors changed in the state. After the action, are all previous lines that were parallel still parallel? Are we occupying the same space as another object? Are triangles still congruent to one another?\\
 		\item \textbf{Describe a Problem to be used in Semantic Planing:}\\
+		Say we had a word with a lot of propositions.\( P\rightarrow Q,\) \(Q\rightarrow R,\) \(\bar{Q}\rightarrow S\) A Forward chaining approach to determine if we can get from X\(\rightarrow\)Y would be faster than considering the domain in a physical space and figuring out connections therein. 
 	\end{enumerate}
 \section{Problem 3}
 	\begin{enumerate}[(a)]
@@ -201,8 +208,22 @@
 \section{Problem 4}
 	\begin{enumerate}[(a)]
 		\item \textbf{Solutions for Large Hanoi Problems:}\\
+		Solutions given by FF Planner\\
+		Since the solutions for tower of hanoi problems are \(2^{n}-1\) length, where n is the number of discs, it didn't seem prudent to include a text form in this document. Please instead refer to the problem 4 folder of our code, it contains a hanoi10output.txt and a hanoi12output.txt with the solutions enclosed.
+
+
 		\item \textbf{Notes on the Structure of the Plan:}\\
+		The Tower of Hanoi plan is actually rather simple. And it is very very repetitive. For instance: imagine a tower n high in position 3 and a goal of a tower n high in position 1. Then, logically due to the rule of only smaller numbers on larger numbers. In order to move disc n to 1, 1 has to be empty and there can't be any discs on top of disc n. Therefore there is a stack of n-1 in position 2. So there exists some number of moves to stack n-1 in position 2, then a move of disc n from position 3 to 1, followed by the the same number again of moves to get n-1 from position 2 onto disc n.
+		
+		~~~~~~~In short if we consider our position numbers flexible we repeat our pattern constantly. Even with n=5. We move 4 discs onto position 2, which requires moving 3 discs onto position 1, which requires moving 2 discs onto position 2, and moving 1 disc onto position 3. Using these precondition states for actions we could then repeat our as-of-yet partially discovered plan and swap in the correct position locations. 
+				
 		\item \textbf{General Planning Strategy using Problem Structure:}\\
+		As already explained there is a lot of repetition in Tower of Hanoi. If we saved our states in sort of a dynamic programming solution we could save a lot of time by comparing previous found solutions. So we save our states and our minimum cost paths for all explored states in a plan. But, especially in this instance, we save them in a generalizable manner that we can plug in variable names at the end. So we might consider the state 001 and 010 to be the same state with the same sequence of actions to get to it. However in this sequence of actions the position names might be left blank and we can fill those in as needed in our plan. 
+		
+		~~~~~~~We do need to be careful to consider the relative pattern compared to the start space, because in that instance we cannot consider the moves to get from all discs on p3  to p1 (many moves)as the same as getting all discs on p3 onto p3 (0 moves). Anyways, we would take our goal state, consider the n-1 disc problem and assemble our solution as Solve(N)=Solve(n-1) + move disc n + Solve(n-1). 
+		
+		~~~~~~~This should be complete because it returns a solution unless one of the subproblems is impossible. And if we can't complete a precondition for some necessary action in the final solution, then there exists no solution.
+			
 	\end{enumerate}
 	
 \section{Problem 5}
