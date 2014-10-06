@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Created by ajmalkunnummal on 10/3/14.
- */
 public class Problem {
     private SokobanState start, goal;
     private boolean[][] walls;

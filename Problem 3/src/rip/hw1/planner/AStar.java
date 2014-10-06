@@ -64,7 +64,7 @@ public class AStar implements Planner {
             out.append("Did not find goal :(");
         }
         out.append("\nTime taken: " + timeTaken / 60000000000l + "m " + (timeTaken % 60000000000l)  / 1000000000.
-                + " s\nNo of states explored: " + numExplored);
+                + "s\nNo of states explored: " + numExplored);
         string = out.toString();
     }
 
