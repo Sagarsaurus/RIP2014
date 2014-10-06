@@ -1,10 +1,10 @@
 import pyhop
 
-def move_disk(state, disk, below, new_below, source, dest):
-    print disk, below, new_below, source, dest, state.on[disk], state.top[source], state.top[dest]
+def move_disk(state, disk, below, new_below):
+    print disk, below, new_below, source, dest, state.on[disk]
     if(disk in state.disk and 
-       state.top[source] == disk and
-       state.top[dest] == new_below and
+       disk in state.clear and
+       new_below in state.clear and
        state.size[disk] < state.size[new_below] and
        below != new_below):
     	state.on[disk] = new_below
