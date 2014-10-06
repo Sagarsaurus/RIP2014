@@ -30,4 +30,4 @@ def hanoi_sub(state, disk_size, source, dest, via):
 				('move_disk', disk, below, new_below, source, dest),
 				('hanoi_sub', disk_size - 1, via, dest, source)]
 				
-pyhop.declare_methods('hanoi-sub', hanoi_sub)
+pyhop.declare_methods('hanoi_sub', hanoi_sub)
