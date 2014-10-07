@@ -97,6 +97,7 @@ Pyhop provides the following classes and functions:
 
 from __future__ import print_function
 import copy,sys, pprint
+import time
 
 ############################################################
 # States and goals
@@ -197,10 +198,12 @@ def pyhop(state,tasks,verbose=0):
     If successful, return the plan. Otherwise return False.
     """
     if verbose>0: print('** pyhop, verbose={}: **\n   state = {}\n   tasks = {}'.format(verbose, state.__name__, tasks))
+	start_time = time.time()
     result = seek_plan(state,tasks,[],0,verbose)
     if verbose>0: 
 		print('** result =',result,'\n')
-		print '** solution length', len(result), '\n'
+		print('** solution length = ', len(result), '\n')
+		print('** used time = ', time.time() - start_time, 'seconds\n')
     return result
 
 def seek_plan(state,tasks,plan,depth,verbose=0):
