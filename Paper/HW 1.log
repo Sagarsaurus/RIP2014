@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.8.25)  6 OCT 2014 23:36
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.8.25)  6 OCT 2014 23:46
 entering extended mode
 **HW*1.tex
 ("C:\Users\Richard\Dropbox\Classes\CS 4649\HW1\RIP2014-HW1\Paper\HW 1.tex"
@@ -474,19 +474,51 @@ Underfull \hbox (badness 10000) in paragraph at lines 199--201
 
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 203.
 [8]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 203.
+Underfull \hbox (badness 10000) in paragraph at lines 204--205
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 206--207
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 208--209
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 210--211
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 212--213
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 214--215
+
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 216.
+[9
+
+]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 216.
  ("C:\Users\Richard\Dropbox\Classes\CS 4649\HW1\RIP2014-HW1\Paper\HW 1.aux")
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 203.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 203.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 216.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 216.
 Package rerunfilecheck Info: File `HW*1.out' has not changed.
 (rerunfilecheck)             Checksum: <no file>.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 203.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 216.
  ) 
 Here is how much of TeX's memory you used:
- 6990 strings out of 493921
- 97809 string characters out of 3144870
+ 6991 strings out of 493921
+ 97815 string characters out of 3144870
  172261 words of memory out of 3000000
  10172 multiletter control sequences out of 15000+200000
  20111 words of font info for 55 fonts, out of 3000000 for 9000
@@ -499,9 +531,9 @@ es (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files
 (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x
 86)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 
 2.9/fonts/type1/urw/times/utmr8a.pfb>
-Output written on "HW 1.pdf" (8 pages, 90443 bytes).
+Output written on "HW 1.pdf" (9 pages, 91493 bytes).
 PDF statistics:
- 112 PDF objects out of 1000 (max. 8388607)
- 33 named destinations out of 1000 (max. 500000)
+ 116 PDF objects out of 1000 (max. 8388607)
+ 34 named destinations out of 1000 (max. 500000)
  41 words of extra memory for PDF output out of 10000 (max. 10000000)
 
