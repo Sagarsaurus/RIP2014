@@ -1,5 +1,7 @@
 from pyhop import *
 import hanoi_domain
+import sys
+sys.setrecursionlimit(30000)
 
 state = State('hanoi-state')
 state.diskLocation = [1 for i in range(0, 12)]
