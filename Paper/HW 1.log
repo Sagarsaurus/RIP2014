@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.8.25)  6 OCT 2014 19:42
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.8.25)  6 OCT 2014 22:31
 entering extended mode
 **HW*1.tex
 ("C:\Users\Richard\Dropbox\Classes\CS 4649\HW1\RIP2014-HW1\Paper\HW 1.tex"
@@ -355,157 +355,133 @@ Underfull \hbox (badness 10000) in paragraph at lines 24--26
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 27--28
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 29--30
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 31--32
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 33--34
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 35--36
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 37--38
-
- []
-
-[1
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 27.
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\omsptm.fd"
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 27.
+ [1
 
 {C:/Users/Richard/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
-Underfull \hbox (badness 10000) in paragraph at lines 52--67
+Underfull \hbox (badness 10000) in paragraph at lines 47--62
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 68--101
+Underfull \hbox (badness 10000) in paragraph at lines 63--96
 
  []
 
 [2]
-Underfull \hbox (badness 10000) in paragraph at lines 102--192
-
- []
-
-[3] [4]
-Underfull \hbox (badness 10000) in paragraph at lines 197--198
-
- []
-
-[5]
-Underfull \hbox (badness 10000) in paragraph at lines 203--210
+Underfull \hbox (badness 10000) in paragraph at lines 97--99
 
  []
 
 
-Overfull \hbox (1.65236pt too wide) in paragraph at lines 211--216
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
+
+ []
+
+[3]
+Underfull \hbox (badness 10000) in paragraph at lines 111--118
+
+ []
+
+
+Overfull \hbox (1.65236pt too wide) in paragraph at lines 119--124
 \OT1/ptm/m/n/10 Path: UP RIGHT RIGHT DOWN UP LEFT LEFT DOWN RIGHT DOWN RIGHT
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 211--216
+Underfull \hbox (badness 10000) in paragraph at lines 119--124
 
  []
 
 
-Overfull \hbox (1.4523pt too wide) in paragraph at lines 217--222
+Overfull \hbox (1.4523pt too wide) in paragraph at lines 125--130
 \OT1/ptm/m/n/10 Path: RIGHT DOWN DOWN RIGHT RIGHT UP UP LEFT LEFT RIGHT RIGHT
  []
 
 
-Overfull \hbox (3.55127pt too wide) in paragraph at lines 217--222
+Overfull \hbox (3.55127pt too wide) in paragraph at lines 125--130
 \OT1/ptm/m/n/10 DOWN DOWN RIGHT RIGHT UP UP UP UP UP RIGHT RIGHT DOWN DOWN
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 217--222
+Underfull \hbox (badness 10000) in paragraph at lines 125--130
 
  []
 
-[6]
-Overfull \hbox (1.14137pt too wide) in paragraph at lines 223--228
+[4]
+Overfull \hbox (1.14137pt too wide) in paragraph at lines 131--136
 \OT1/ptm/m/n/10 RIGHT UP RIGHT UP UP LEFT DOWN DOWN DOWN LEFT LEFT UP RIGHT
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 223--228
+Underfull \hbox (badness 10000) in paragraph at lines 131--136
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 229--231
+Underfull \hbox (badness 10000) in paragraph at lines 137--139
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 232--234
+Underfull \hbox (badness 10000) in paragraph at lines 140--142
 
  []
 
-[7]
-Overfull \hbox (48.5866pt too wide) in paragraph at lines 242--243
+[5]
+Overfull \hbox (48.5866pt too wide) in paragraph at lines 150--151
 []       \OT1/ptm/m/n/10 The rel-e-vant meth-ods that im-ple-ment this are in r
 ip.hw1.planner.sokoban.SokobanHeuristic.
  []
 
-[8]
-Underfull \hbox (badness 10000) in paragraph at lines 268--269
+[6]
+Underfull \hbox (badness 10000) in paragraph at lines 176--178
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 269--270
+Underfull \hbox (badness 10000) in paragraph at lines 180--183
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 270--271
+Underfull \hbox (badness 10000) in paragraph at lines 184--186
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 271--272
+Underfull \hbox (badness 10000) in paragraph at lines 188--190
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 272--273
+Underfull \hbox (badness 10000) in paragraph at lines 191--193
 
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 274.
-[9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 274.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 195.
+[7]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 195.
  ("C:\Users\Richard\Dropbox\Classes\CS 4649\HW1\RIP2014-HW1\Paper\HW 1.aux")
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 274.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 274.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 195.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 195.
 Package rerunfilecheck Info: File `HW*1.out' has not changed.
 (rerunfilecheck)             Checksum: <no file>.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 274.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 195.
  ) 
 Here is how much of TeX's memory you used:
- 6973 strings out of 493921
- 97497 string characters out of 3144870
- 176261 words of memory out of 3000000
- 10157 multiletter control sequences out of 15000+200000
+ 6989 strings out of 493921
+ 97803 string characters out of 3144870
+ 172261 words of memory out of 3000000
+ 10172 multiletter control sequences out of 15000+200000
  20111 words of font info for 55 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 34i,6n,28p,900b,429s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 34i,6n,28p,900b,431s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Progra
 m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program 
 Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program Fil
@@ -513,9 +489,9 @@ es (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files
 (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x
 86)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 
 2.9/fonts/type1/urw/times/utmr8a.pfb>
-Output written on "HW 1.pdf" (9 pages, 89935 bytes).
+Output written on "HW 1.pdf" (7 pages, 89678 bytes).
 PDF statistics:
- 116 PDF objects out of 1000 (max. 8388607)
- 34 named destinations out of 1000 (max. 500000)
+ 108 PDF objects out of 1000 (max. 8388607)
+ 32 named destinations out of 1000 (max. 500000)
  41 words of extra memory for PDF output out of 10000 (max. 10000000)
 
