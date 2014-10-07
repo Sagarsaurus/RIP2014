@@ -14,7 +14,7 @@ public class Main {
         Problem problem;
         if(args.length == 1)
             fileName = args[0];
-        else fileName = "4.txt";
+        else fileName = "1.txt";
         try {
             problem = new Problem(new Scanner(new File(fileName)));
             if(problem.validate())

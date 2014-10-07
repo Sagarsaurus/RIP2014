@@ -11,6 +11,5 @@ public class SokobanHeuristic implements Heuristic {
     @Override
     public double estimate(State s, State g) {
         return SokobanState.manhDistance((SokobanState) s, (SokobanState) g);
-
     }
 }
