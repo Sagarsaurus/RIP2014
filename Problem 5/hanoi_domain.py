@@ -1,30 +1,24 @@
 import pyhop
 
-def move_disk(state, disk, below, new_below, source, dest):
-    print disk, below, new_below, source, dest, state.on[disk], state.top[source], state.top[dest]
-    if(disk in state.disk and 
-       state.top[source] == disk and
-       state.top[dest] == new_below and
-       state.size[disk] < state.size[new_below] and
-       below != new_below):
-    	state.on[disk] = new_below
-    	state.top[source] = below
-    	state.top[dest] = disk
-    	return state
-    else:
-        return False
+def move_disk(state, disk, peg_source, peg_dest):
+	if state.diskLocation[disk] == peg_source:
+		state.diskLocation[disk] = peg_dest
+		return state
+	else:
+		return False
 
 pyhop.declare_operators(move_disk)
 
-def hanoi_sub(state, disk_size, source, dest, via):
-	disk = [item for item, size in state.size.items() if size == disk_size][0]
-	below = [below for top, below in state.on.items() if top == disk][0]
-	new_below = state.top[dest]
-	if(disk_size == 1):
-		return [('move_disk', disk, below, new_below, source, dest)]
+def move_multiple(state, disk, peg_source, peg_dest, peg_via):
+	if disk > 0:
+		return [('move', disk - 1, 	peg_source, peg_via, peg_dest), ('move_disk', disk, peg_source, peg_dest), ('move', disk - 1, peg_via, peg_dest, peg_source)]
 	else:
-		return [('hanoi_sub', disk_size - 1, source, via, dest), 
-				('move_disk', disk, below, new_below, source, dest),
-				('hanoi_sub', disk_size - 1, via, dest, source)]
-				
-pyhop.declare_methods('hanoi_sub', hanoi_sub)
+		return False
+		
+def move_single(state, disk , peg_source, peg_dest, peg_via):
+	if disk <= 0:
+		return [('move_disk', disk, peg_source, peg_dest)]
+	else:
+		return False
+		
+pyhop.declare_methods('move', move_single, move_multiple)

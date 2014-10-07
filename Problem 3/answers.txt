@@ -42,7 +42,7 @@ b)
 
 c)
 
-Our planner uses an A* search with some pruning. It is complete because the search space has every unique state except the pruned states which are provably never going to lead to the goal state (we explain why in 3 d) )
+Our planner uses an A* search with some pruning. It is complete because the search space has every unique state except the pruned states which are probably never going to lead to the goal state (we explain why in 3 d) )
 
 d)
 
