@@ -3,3 +3,4 @@ blackbox.exe
 *.swo
 *.class
 *.stackdump
+*.pyc
