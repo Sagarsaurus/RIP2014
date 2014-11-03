@@ -21,6 +21,9 @@ class Vector2:
     def __div__(self, other):
         return Vector2(self.x / other, self.y / other)
 
+    def __eq__(self, other):
+        return (other is Vector2) and (self.x == other.x) and (self.y == other.y)
+
     def magnitude(self):
         return math.sqrt(self.x ^ 2 + self.y ^ 2)
 
