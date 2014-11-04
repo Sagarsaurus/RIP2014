@@ -13,10 +13,10 @@ class Vector2:
         self.y = y
 
     def __add__(self, other):
-        return Vector2(self.x + other.x, self.x + other.y)
+        return Vector2(self.x + other.x, self.y + other.y)
 
     def __sub__(self, other):
-        return Vector2(self.x - other.x, self.x - other.y)
+        return Vector2(self.x - other.x, self.y - other.y)
 
     def __mul__(self, other):
         if other is Vector2:

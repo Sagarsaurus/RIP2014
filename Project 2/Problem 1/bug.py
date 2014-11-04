@@ -31,13 +31,17 @@ class Bug1(BugAlgorithm):
         self.path = [bugPos]
         while not self.atGoal(bugPos):
             currentDirection = (self.goal - bugPos).norm()
-            discretizedMovement = Vector2(round(currentDirection.x), round(currentDirection.y))
-            while self.collisionCheck(bugPos + discretizedMovement) is None and not self.atGoal(bugPos):
-                bugPos += discretizedMovement
-                self.path += [bugPos]
+            while self.collisionCheck(bugPos + currentDirection) is None and not self.atGoal(bugPos):
+                if (self.goal - bugPos).magnitude() < currentDirection.magnitude():
+                    bugPos = self.goal
+                    break
+                else:
+                    bugPos += currentDirection
+                    self.path += [bugPos]
+                    currentDirection = (self.goal - bugPos).norm()
             if self.atGoal(bugPos):
                 break
-            obstacle = self.collisionCheck(bugPos + discretizedMovement)
+            obstacle = self.collisionCheck(bugPos + currentDirection)
             hitPoint = bugPos
             pointDistances = {}
             bugPos += obstacle.tangent(bugPos)
@@ -65,7 +69,7 @@ def main():
 
     #Initialize
     start_position = Vector2(1,1)
-    goal_position = Vector2(20,20)
+    goal_position = Vector2(300,100)
     obstacles = []
     angle_change = 45
 
