@@ -32,32 +32,19 @@ class Bug1(BugAlgorithm):
         while not self.atGoal(bugPos):
             currentDirection = (self.goal - bugPos).norm()
             while self.collisionCheck(bugPos + currentDirection) is None and not self.atGoal(bugPos):
-                if (self.goal - bugPos).magnitude() < currentDirection.magnitude():
+                if (self.goal - bugPos).magnitude() <= currentDirection.magnitude():
                     bugPos = self.goal
                     break
                 else:
                     bugPos += currentDirection
                     self.path += [bugPos]
+                    print bugPos
                     currentDirection = (self.goal - bugPos).norm()
             if self.atGoal(bugPos):
                 break
             obstacle = self.collisionCheck(bugPos + currentDirection)
-            hitPoint = bugPos
-            pointDistances = {}
-            bugPos += obstacle.tangent(bugPos)
-            while bugPos != hitPoint and not self.atGoal(bugPos):
-                print "hi"
-                bugPos += obstacle.tangent(bugPos)
-                pointDistances += {bugPos: (self.goal - bugPos).magnitude()}
-                self.path += [bugPos]
-            if self.atGoal(bugPos):
-                break
-            closestPos = min(pointDistances, key = pointDistances.get)
-            while bugPos != closestPos and not self.atGoal(bugPos):
-                bugPos += obstacle.tangent(bugPos)
-                self.path += [bugPos]
-                if self.atGoal(bugPos):
-                    break
+            bugPos, additionalPoints = obstacle.collisionPointSet(bugPos, self.goal)
+            self.path += additionalPoints
 
 
 def main():

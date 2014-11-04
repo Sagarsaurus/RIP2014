@@ -57,6 +57,11 @@ class Obstacle:
     def tangent(self, point):
         raise NotImplementedError()
 
+    def collisionPointSet(self, pointStart, goal):
+        raise NotImplementedError()
+
+
+
 class RectangleObstacle(Obstacle):
 
     def __init__(self, x, y, w, h):
@@ -112,6 +117,27 @@ class CircleObstacle(Obstacle):
         self.x = x
         self.y = y
         self.r = r
+
+    def collisionPointSet(self, pointStart, goal):
+        radPer1Unit = 1 / self.r
+        startAngle = math.atan2(pointStart.y - self.y, pointStart.x - self.x)
+        angle = startAngle
+        points = [pointStart]
+        pointDistances = {}
+        while angle < startAngle + 2 * math.pi:
+            angle += radPer1Unit
+            point = Vector2(math.cos(angle) + self.x, math.sin(angle) + self.y)
+            distance = (goal - point).magnitude()
+            pointDistances += {point, distance}
+            points += [point]
+        closestPos = min(pointDistances, key = pointDistances.get)
+        pointsCopy = points[:]
+        for i in points
+            pointsCopy += [i]
+            if i != closestPos
+                break
+        return closestPos, pointsCopy
+
 
     def collisionCheck(self, point):
         if not(point is Vector2):
