@@ -1,54 +1,38 @@
 import util
+import math
 
 class BugAlgorithm:
 
-    def __init__(self, startPosition, goalPosition, moveSpeed, obstacles):
+    def __init__(self, startPosition, goalPosition, moveSpeed, obstacles, angleChange):
         self.start = startPosition
         self.bugPosition = startPosition
         self.movementSpeed = moveSpeed
         self.goal = goalPosition
         self.obstacles = obstacles
         self.path = []
+        self.angleChange = angleChange
 
-    def run(self):
+    def timeStep(self):
         
-        if self.atGoal()
+        if self.atGoal():
             return True
 
-        currentPosition = self.bugPosition
-        currentDirection = (self.goal - currentPosition).norm()
-        remainingMovement = movementSpeed
-        movement = [currentPosition]
+        currentDirection = (self.goal - self.bugPosition).norm()
+        angle = math.atan2(currentDirection.y, currentDirection.x)
         while True:
-            while True:
-                obstacle, point = self.raycast(currentPosition, currentDirection * remaningMovement)
-                remainingMovement -= (currentPosition - point).magnitude()
-                currentPosition = point
-                movement += [currentPosition]
-                if obstacle == None:
-                    if (self.goal - currentPosition).magnitude() <= remainingMovement:
-                        currentPosition = self.goal
-                    else:
-                        currentPosition += (self.goal - currentPosition).norm() * remainingMovement
-                    movement += [currentPosition]
-                    break
-                elif remainingMovement <= 0:
-                    break
-                else
-                    currentDirection = obstacle.tangent(point)
-
-            self.bugPosition = currentPosition
-            if self.atGoal() or remainingMovement <= 0:
-                break;
-            currentDirection = (self.goal - currentPosition).norm() #next raycast needs to be facing the goal
-        movement = tuple(movement)
-        self.path += [movement]
+            discretizedMovement = Vector2(math.round(currentDirection.x), math.round(currentDirection.))
+            if not self.collisionCheck(self.bugPosition + discretizedMovement)
+                self.bugPosition += discretizedMovement
+                break
+            else:
+                angle += self.angleChange
+                currentDirection = Vector2(math.cos(angle), math.sin(angle))
+        path += [self.bugPosition]
         return self.atGoal()
-        
 
     def run(self, maxTimeSteps = 1000):
         for i in range(0, maxTimeSteps):
-            if self.atGoal()
+            if self.timeStep():
                 return i, True
         return maxTimeSteps, False
 
@@ -58,10 +42,7 @@ class BugAlgorithm:
     def collisionCheck(self, point):
         for obstacle in self.obstacles:
             if obstacle.collisionCheck(point):
-                return obstacle
-        return None
-
-    def raycast(self, start, ray):
-        raise NotImplementedError()
+                return True
+        return False
     
 class Bug1:
