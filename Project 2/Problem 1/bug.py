@@ -24,18 +24,19 @@ class BugAlgorithm:
                 obstacle, point = self.raycast(currentPosition, currentDirection * remaningMovement)
                 remainingMovement -= (currentPosition - point).magnitude()
                 currentPosition = point
-                currentDirection = obstacle.tangent(point)
                 movement += [currentPosition]
-                if remainingMovement <= 0:
-                    break
-                if (self.goal - currentPosition).magnitude() <= remainingMovement:
-                    currentPosition = self.goal
+                if obstacle == None:
+                    if (self.goal - currentPosition).magnitude() <= remainingMovement:
+                        currentPosition = self.goal
+                    else:
+                        currentPosition += (self.goal - currentPosition).norm() * remainingMovement
                     movement += [currentPosition]
                     break
-                if obstacle != None:
-                    currentPosition += (self.goal - currentPosition).norm() * remainingMovement
-                    movement += [currentPosition]
+                elif remainingMovement <= 0:
                     break
+                else
+                    currentDirection = obstacle.tangent(point)
+
             self.bugPosition = currentPosition
             if self.atGoal() or remainingMovement <= 0:
                 break;
