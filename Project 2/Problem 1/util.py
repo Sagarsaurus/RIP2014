@@ -42,6 +42,7 @@ class Vector2:
     def to_tuple(self):
         return int(self.x), int(self.y)
 
+
 class Line:
 
     def __init__(self, start, finish):
@@ -97,7 +98,13 @@ class RectangleObstacle(Obstacle):
         return (point is Vector2) and\
                (([self.L, self.R].contains(point.x) and inRange(point.y, self.T, self.B, True)) or
                 ([self.T, self.B].contains(point.y) and inRange(point.x, self.L, self.R, True)))
-                
+
+    def get_position(self):
+        return int(self.x), int(self.y)
+
+    def get_dimensions(self):
+        return int(self.w), int(self.h)
+
 
 class CircleObstacle(Obstacle):
 
@@ -111,3 +118,9 @@ class CircleObstacle(Obstacle):
             return False
         else:
             return (point - Vector2(self.x, self.y)).magnitude() < self.r
+
+    def get_position(self):
+        return int(self.x), int(self.y)
+
+    def get_radius(self):
+        return int(self.r)

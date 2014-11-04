@@ -1,4 +1,4 @@
-from util import Vector2
+from util import *
 import pygame
 import math
 
@@ -66,11 +66,12 @@ def main():
     GREEN = (0, 255, 0)
     RED = (255, 0, 0)
     WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
 
     #Initialize
-    start_position = Vector2(1,1)
-    goal_position = Vector2(300,100)
-    obstacles = []
+    start_position = Vector2(22, 100)
+    goal_position = Vector2(300, 100)
+    obstacles = [RectangleObstacle(30, 30, 45, 100)]
     angle_change = 45
 
     bug1 = Bug1(start_position, goal_position, obstacles, angle_change)
@@ -122,6 +123,13 @@ def main():
         for position in path_to_tuples:
             pygame.draw.circle(screen, GREEN, position, 1, 0)
 
+        # Draw obstacles
+        if obstacles:
+            for obstacle in obstacles:
+                if obstacle is RectangleObstacle:
+                    pygame.draw.rect(screen, BLACK, pygame.Rect(obstacle.get_position(), obstacle.get_dimensions()))
+                elif obstacle is CircleObstacle:
+                    pygame.draw.circle(screen, BLACK, obstacle.get_position(), obstacle.get_radius(), 0)
 
         # pygame.draw.circle(screen, GREEN, bug1.bugPosition.to_tuple(), 10, 0)
 
