@@ -64,6 +64,8 @@ class RectangleObstacle(Obstacle):
         self.B = y + h
         self.L = x
         self.R = x + w
+        self.w = w
+        self.h = h
 
     def collisionCheck(self, point):
         if not (point is Vector2):
@@ -100,7 +102,7 @@ class RectangleObstacle(Obstacle):
                 ([self.T, self.B].contains(point.y) and inRange(point.x, self.L, self.R, True)))
 
     def get_position(self):
-        return int(self.x), int(self.y)
+        return int(self.L), int(self.T)
 
     def get_dimensions(self):
         return int(self.w), int(self.h)
