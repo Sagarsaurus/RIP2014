@@ -10,24 +10,37 @@ class BugAlgorithm:
         self.obstacles = obstacles
         self.path = []
 
-    def timeStep(self):
+    def run(self):
         
         if self.atGoal()
             return True
-        
-        directionToGoal = (self.goal - self.bugPosition).norm()
-        directMovement = directionToGoal * movementSpeed
-        endPosition = self.bugPosition
-        movement = ()
-        if collisionCheck(directMovement):
-            #Need to fill the rest of this
-        else:
-            if (self.goal - self.bugPosition).magnitude() <= self.movementSpeed
-                endPosition = self.goal
-            else:
-                endPosition = self.bugPosition + directMovement
-            movement = (endPosition)
-        self.bugPosition = endPosition
+
+        currentPosition = self.bugPosition
+        currentDirection = (self.goal - currentPosition).norm()
+        remainingMovement = movementSpeed
+        movement = [currentPosition]
+        while True:
+            while True:
+                obstacle, point = self.raycast(currentPosition, currentDirection * remaningMovement)
+                remainingMovement -= (currentPosition - point).magnitude()
+                currentPosition = point
+                currentDirection = obstacle.tangent(point)
+                movement += [currentPosition]
+                if remainingMovement <= 0:
+                    break
+                if (self.goal - currentPosition).magnitude() <= remainingMovement:
+                    currentPosition = self.goal
+                    movement += [currentPosition]
+                    break
+                if obstacle != None:
+                    currentPosition += (self.goal - currentPosition).norm() * remainingMovement
+                    movement += [currentPosition]
+                    break
+            self.bugPosition = currentPosition
+            if self.atGoal() or remainingMovement <= 0:
+                break;
+            currentDirection = (self.goal - currentPosition).norm() #next raycast needs to be facing the goal
+        movement = tuple(movement)
         self.path += [movement]
         return self.atGoal()
         
@@ -44,8 +57,8 @@ class BugAlgorithm:
     def collisionCheck(self, point):
         for obstacle in self.obstacles:
             if obstacle.collisionCheck(point):
-                return True
-        return False
+                return obstacle
+        return None
 
     def raycast(self, start, ray):
         raise NotImplementedError()
