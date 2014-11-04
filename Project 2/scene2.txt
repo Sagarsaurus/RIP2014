@@ -1,0 +1,8 @@
+% Three rectangular obstacles
+% Center of rectangle(Cx,Cy), orientation of rectancle(radian), width of rectancle, height of rectancle
+
+-0.7 1.3 1.57 2 5
+
+4.0 -0.9 0 2 1
+
+-2.6 -0.7 0 1 1

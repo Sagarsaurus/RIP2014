@@ -3,7 +3,7 @@ import math
 def inRange(a, b, c, inclusive = False):
     if inclusive:
         return a >= b and a <= c
-    else
+    else:
         return a > b and a < c
 
 class Vector2:
@@ -21,20 +21,26 @@ class Vector2:
     def __mul__(self, other):
         if other is Vector2:
             return self.x * other.x + self.y * other.y
-        else
+        else:
             return Vector2(self.x * other, self.y * other)
 
     def __div__(self, other):
         return Vector2(self.x / other, self.y / other)
 
     def __eq__(self, other):
-        return (other is Vector2) and (self.x == other.x) and (self.y == other.y)
+        return (self.x == other.x) and (self.y == other.y)
 
     def magnitude(self):
-        return math.sqrt(self.x ^ 2 + self.y ^ 2)
+        return math.sqrt(self.x ** 2 + self.y ** 2)
 
     def norm(self):
         return self / self.magnitude()
+
+    def __str__(self):
+        return "x: " + str(self.x) + "y: " + str(self.y)
+
+    def to_tuple(self):
+        return int(self.x), int(self.y)
 
 class Line:
 
@@ -58,37 +64,37 @@ class RectangleObstacle(Obstacle):
         self.L = x
         self.R = x + w
 
-    def collisionCheck(self. point):
+    def collisionCheck(self, point):
         if not (point is Vector2):
             return False
-        else
-            return inRange(point.x, self.L, self.R) and
+        else:
+            return inRange(point.x, self.L, self.R) and\
                     inRange(point.y, self.T, self.B)
 
     def tangent(self, point):
         if self.onEdge(point):
-            return Vector(0,0)
+            return Vector2(0,0)
         else:
             if point.x == self.L:
                 if point.y == self.B:       #BL Corner
-                    return Vector(1, 0)
+                    return Vector2(1, 0)
                 else:                       #L Edge
-                    return Vector(0, -1)
+                    return Vector2(0, -1)
             elif point.x == self.R: 
                 if point.y == self.T:       #TR Corner
-                    return Vector(-1, 0)
+                    return Vector2(-1, 0)
                 else:                       #R Edge
-                    return Vector(0, 1)
+                    return Vector2(0, 1)
             else:
                 if point.y == self.T:       #T Edge
-                    return Vector(-1, 0)
-                elif point.y == self.B      #B Edge
-                    return Vector(1, 0)
+                    return Vector2(-1, 0)
+                elif point.y == self.B:      #B Edge
+                    return Vector2(1, 0)
                 else:
-                    return Vector(0, 0)
+                    return Vector2(0, 0)
 
     def onEdge(self, point):
-        return (point is Vector2) and
+        return (point is Vector2) and\
                (([self.L, self.R].contains(point.x) and inRange(point.y, self.T, self.B, True)) or
                 ([self.T, self.B].contains(point.y) and inRange(point.x, self.L, self.R, True)))
                 
@@ -100,8 +106,8 @@ class CircleObstacle(Obstacle):
         self.y = y
         self.r = r
 
-    def collisionCheck(self. point):
+    def collisionCheck(self, point):
         if not(point is Vector2):
             return False
-        else
-            return (point - Vector2(self.x, self.y)).magnitude() < r
+        else:
+            return (point - Vector2(self.x, self.y)).magnitude() < self.r
