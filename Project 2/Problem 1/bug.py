@@ -46,7 +46,6 @@ class Bug1(BugAlgorithm):
             bugPos, additionalPoints = obstacle.collisionPointSet(bugPos, self.goal)
             self.path += additionalPoints
 
-
 def main():
 
     # Define some colors
@@ -58,7 +57,7 @@ def main():
     #Initialize
     start_position = Vector2(22, 100)
     goal_position = Vector2(300, 100)
-    obstacles = [RectangleObstacle(30, 30, 45, 100)]
+    obstacles = [RectangleObstacle(30, 30, 45, 100), CircleObstacle(150, 150, 20)]
     angle_change = 45
 
     bug1 = Bug1(start_position, goal_position, obstacles, angle_change)
@@ -113,9 +112,9 @@ def main():
         # Draw obstacles
         if obstacles:
             for obstacle in obstacles:
-                if obstacle is RectangleObstacle:
+                if isinstance(obstacle, RectangleObstacle):
                     pygame.draw.rect(screen, BLACK, pygame.Rect(obstacle.get_position(), obstacle.get_dimensions()))
-                elif obstacle is CircleObstacle:
+                elif isinstance(obstacle, CircleObstacle):
                     pygame.draw.circle(screen, BLACK, obstacle.get_position(), obstacle.get_radius(), 0)
 
         # pygame.draw.circle(screen, GREEN, bug1.bugPosition.to_tuple(), 10, 0)
