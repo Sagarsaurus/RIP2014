@@ -17,10 +17,9 @@ class FieldMapGenerator:
         self.obstacles=obstacles
         self.goal=goal
         self.minDistance=minDistance
-        self.map=[]
+        self.map=np.zeros((mapSize[1],mapSize[0]))
     
     def computeField(self):
-        self.map=np.zeros((mapSize[1],mapSize[0]))
         self.attractionField()
         self.repulsionField()
         return self.map
@@ -33,20 +32,24 @@ class FieldMapGenerator:
         return self.map
         
     def repulsionField(self):
-        for x in range(len(self.map)):
-            for y in range(len(self.map[0])):
+        for x in range(len(self.map[0])):
+            for y in range(len(self.map)):
                 hitSomething,hitWhat= self.collisionCheck((x,y))
                 if not hitSomething:
                     #I believe the factor v here is up to me, try a couple
-                    v=1
-                    print "~~~~~~~~~~~~~~~~~~~~~~~~~~"
-                    print x
-                    print y
-                    print hitWhat.distanceTo((x,y))
-                    print hitWhat.x
-                    print hitWhat.y
-                    self.map[y][x]+=.5*v*pow(1/hitWhat.distanceTo((x,y))-1/self.minDistance,2)
-        
+                    v=4000
+                    if hitWhat.distanceTo((x,y))<=0:
+#                        print "255"
+                        self.map[y][x]+=255
+                    else:
+                        
+                        if .5*v*pow(1/hitWhat.distanceTo((x,y))-1/self.minDistance,2)>255:
+#                            print 255
+                            self.map[y][x]+=255
+                        else:
+#                            print .5*v*pow(1/hitWhat.distanceTo((x,y))-1/self.minDistance,2)
+                            self.map[y][x]+=.5*v*pow(1/hitWhat.distanceTo((x,y))-1/self.minDistance,2)
+        return self.map
         
     def collisionCheck(self, point):
         for obs in self.obstacles:
@@ -78,39 +81,84 @@ class Agent:
         self.obstacles=obstacles
         self.curPos=start
         self.minDistance=minDistance
+        self.plan=[]
         
     
     def run(self):
+        self.plan=[start]
+        
         fmapGen=FieldMapGenerator(mapSize,goal,obstacles,minDistance)
         fmap=fmapGen.computeField()
+        
         while not self.atGoal(self.curPos):
             nextPos=self.chooseNext(fmap)
-            if nextPost==self.curPos and not self.atGoal(self.curPos):
+            if nextPos==self.curPos and not self.atGoal(self.curPos):
                 print "Algorithm got stuck"
                 break;
+            self.plan.append(nextPos)
+#            print nextPos
             self.curPos=nextPos
+#        print self.curPos
+#        print self.goal
+        return self.plan,fmap
             
     def chooseNext(self,fmap):
-        best=fmap[self.curPos[0]][self.curPos[1]]
+        best=fmap[self.curPos[1]][self.curPos[0]]
         bestPos=self.curPos
-        for x in range(-1,1):
-            for y in range(-1,1):
-                if fmap[self.bestPos[0]+x][self.bestPos[1]+y]<best:
-                    best=fmap[self.bestPos[0]+x][self.bestPos[1]+y]
-                    bestPos=(self.bestPos[0]+x,self.bestPos[1]+y)
+#        print "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+#        print best
+#        print bestPos
+        for x in range(-1,2):
+            for y in range(-1,2):
+#                print "X:",x
+#                print "Y:", y
+#                print fmap[bestPos[1]+y][bestPos[0]+x]
+#                print self.curPos[1]+y>=0
+#                print self.curPos[1]+y< self.mapSize[0]
+#                print self.curPos[0]+x>=0 
+#                print self.mapSize[1]
+#                print self.curPos[0]+x
+#                print self.curPos[0]+x<= self.mapSize[1]
+                if self.curPos[1]+y>=0 and self.curPos[1]+y< self.mapSize[1] and self.curPos[0]+x>=0 and self.curPos[0]+x<= self.mapSize[0] and fmap[self.curPos[1]+y][self.curPos[0]+x]<best:
+                    best=fmap[self.curPos[1]+y][self.curPos[0]+x]
+                    bestPos=(self.curPos[0]+x,self.curPos[1]+y)
+        print bestPos
         return bestPos
                 
     
     def atGoal(self, pos):
-        return pos == self.goal(self.curPos)
+        return pos == self.goal
         
+def fit(array, nmax):
+    min=array[0][0]
+    max=array[0][0]
+    for x in array:
+        for y in x:
+            if y>max:
+                max=y
+            if y<min:
+                min=y
+    max-=min
+    for x in range(len(array)):
+        for y in range(len(array[x])):
+            array[x][y]=(array[x][y]-min)/max*nmax
+    return array
+    
 #TESTING AREA
-obstacles=[CircleObstacle(50,60,20),CircleObstacle(150,75,135)]
+obstacles=[CircleObstacle(50,60,20),CircleObstacle(150,75,35)]
 start=(10,60)
 goal=(210,75)
-mapSize=(230,300)
-minDistance=5
+mapSize=(230,150)
+minDistance=30
+
 a=Agent(start,goal,mapSize,obstacles,minDistance)
-FMG=FieldMapGenerator(mapSize, goal, obstacles,minDistance)
-#plt.imshow(FMG.computeField,cmap="gray")
-cv2.imwrite("test.jpg",FMG.computeField())
+#FMG=FieldMapGenerator(mapSize, goal, obstacles,minDistance)
+#img=FMG.computeField()
+plan,fmap=a.run()
+fmap=fit(fmap,255)
+print plan
+for elt in plan:
+    fmap[elt[1]][elt[0]]=255#-fmap[elt[1]][elt[0]]
+
+
+cv2.imwrite("test.jpg",fmap)
