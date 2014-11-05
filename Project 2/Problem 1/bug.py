@@ -34,6 +34,8 @@ class Bug1(BugAlgorithm):
             while self.collisionCheck(bugPos + currentDirection) is None and not self.atGoal(bugPos):
                 if (self.goal - bugPos).magnitude() <= currentDirection.magnitude():
                     bugPos = self.goal
+                    self.path += [bugPos]
+                    print bugPos
                     break
                 else:
                     bugPos += currentDirection
@@ -43,10 +45,13 @@ class Bug1(BugAlgorithm):
             if self.atGoal(bugPos):
                 break
             obstacle = self.collisionCheck(bugPos + currentDirection)
-            bugPos, additionalPoints = obstacle.collisionPointSet(bugPos, self.goal)
+            bugPos, additionalPoints = obstacle.collisionPointSet(bugPos + currentDirection, self.goal)
             self.path += additionalPoints
 
+
+
 def main():
+
 
     # Define some colors
     GREEN = (0, 255, 0)
@@ -54,10 +59,17 @@ def main():
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
 
+    bug_x = [0,0  , 40, 40,5  ,5  ,35 ,35 ,5  ,5 ,35,35,5 ,5 ,35,35 ,5,5 ,35,35,5 ,5,75,75,20,20,75,75,20,20,75,75,20,20 ,75 ,75 ,20 ,20 ,80 ,80]
+    bug_y = [0,147,147,140,140,119,119,112,112,91,91,84,84,63,63,56,56,35,35,28,28,7,7 ,42,42,49,49,70,70,77,77,98,98,105,105,126,126,133,133,0 ]
+    bug_points = []
+    for i in zip(bug_x, bug_y):
+        bug_points += [Vector2(i[0], i[1])]
+
+
     #Initialize
-    start_position = Vector2(22, 100)
-    goal_position = Vector2(300, 100)
-    obstacles = [RectangleObstacle(30, 30, 45, 100), CircleObstacle(150, 150, 20)]
+    start_position = Vector2(25,157)
+    goal_position = Vector2(25,17)
+    obstacles = [ PolygonObstacle(bug_points) ]
     angle_change = 45
 
     bug1 = Bug1(start_position, goal_position, obstacles, angle_change)
