@@ -24,11 +24,10 @@ class BugAlgorithm:
                 return obstacle
         return None
 
-class Bug1(BugAlgorithm):
-
-    def run(self):
+    def run(self, bug = 1):
         bugPos = self.start
         self.path = [bugPos]
+        muLine = Line(self.start, self.goal)
         while not self.atGoal(bugPos):
             currentDirection = (self.goal - bugPos).norm()
             while self.collisionCheck(bugPos + currentDirection) is None and not self.atGoal(bugPos):
@@ -45,7 +44,10 @@ class Bug1(BugAlgorithm):
             if self.atGoal(bugPos):
                 break
             obstacle = self.collisionCheck(bugPos + currentDirection)
-            bugPos, additionalPoints = obstacle.collisionPointSet(bugPos + currentDirection, self.goal)
+            if bug == 1:
+                bugPos, additionalPoints = obstacle.collisionPointSet(bugPos + currentDirection, self.goal)
+            elif bug == 2:
+                bugPos, additionalPoints = obstacle.collisionPointSetBug2(bugPos + currentDirection, muLine)
             self.path += additionalPoints
 
 
@@ -65,14 +67,22 @@ def main():
     for i in zip(bug_x, bug_y):
         bug_points += [Vector2(i[0], i[1])]
 
-
     #Initialize
+    start_position = Vector2(10, 60)
+    goal_position = Vector2(210, 75)
+    obstacles = [ CircleObstacle(50, 60, 20), CircleObstacle(150, 75, 35) ]
+    angle_change = 45
+
+    domain1 = BugAlgorithm(start_position, goal_position, obstacles, angle_change)
+
     start_position = Vector2(25,157)
     goal_position = Vector2(25,17)
     obstacles = [ PolygonObstacle(bug_points) ]
     angle_change = 45
 
-    bug1 = Bug1(start_position, goal_position, obstacles, angle_change)
+    domain2 = BugAlgorithm(start_position, goal_position, obstacles, angle_change)
+
+    bug = domain1
 
     pygame.init()
 
@@ -80,7 +90,7 @@ def main():
     size = (640, 480)
     screen = pygame.display.set_mode(size)
 
-    pygame.display.set_caption("Bug 1")
+    pygame.display.set_caption("Bug")
 
     # Loop until the user clicks the close button.
     done = False
@@ -89,11 +99,11 @@ def main():
     clock = pygame.time.Clock()
 
     # Run bug 1
-    bug1.run()
+    bug.run(bug = 2)
 
     path_to_tuples = []
 
-    for v in bug1.path:
+    for v in bug.path:
         path_to_tuples.append(v.to_tuple())
 
     # -------- Main Program Loop -----------
