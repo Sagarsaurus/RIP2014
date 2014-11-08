@@ -7,7 +7,6 @@ Created on Tue Nov 04 21:13:07 2014
 
 import math
 import numpy as np
-from matplotlib import pyplot as plt
 from util import *
 import cv2
 
@@ -22,6 +21,7 @@ class FieldMapGenerator:
     def computeField(self):
         self.attractionField()
         self.repulsionField()
+        self.map=cv2.GaussianBlur(self.map,(5,5),0)
         return self.map
     
     #to start this will just compute linear distance function (Quadradic to be added later)
@@ -35,27 +35,36 @@ class FieldMapGenerator:
         for x in range(len(self.map[0])):
             for y in range(len(self.map)):
                 hitSomething,hitWhat= self.collisionCheck((x,y))
-                if not hitSomething:
+                if hitSomething:
                     #I believe the factor v here is up to me, try a couple
                     v=4000
-                    if hitWhat.distanceTo((x,y))<=0:
-#                        print "255"
-                        self.map[y][x]+=255
-                    else:
-                        
-                        if .5*v*pow(1/hitWhat.distanceTo((x,y))-1/self.minDistance,2)>255:
-#                            print 255
-                            self.map[y][x]+=255
+                    highestPoint=0
+                    for o in hitWhat:
+                    
+                        if o.distanceTo((x,y))<=0:
+    #                        print "255"
+                            highestPoint=255
                         else:
-#                            print .5*v*pow(1/hitWhat.distanceTo((x,y))-1/self.minDistance,2)
-                            self.map[y][x]+=.5*v*pow(1/hitWhat.distanceTo((x,y))-1/self.minDistance,2)
+                            
+                            if .5*v*pow(1/o.distanceTo((x,y))-1/self.minDistance,2)>255:
+    #                            print 255
+                                highestPoint=255
+                            else:
+    #                            print .5*v*pow(1/hitWhat.distanceTo((x,y))-1/self.minDistance,2)
+                                num=.5*v*pow(1/o.distanceTo((x,y))-1/self.minDistance,2)
+                                if num>highestPoint:
+                                    highestPoint=num
+                    self.map[y][x]+=highestPoint
         return self.map
         
     def collisionCheck(self, point):
+        o=[]
         for obs in self.obstacles:
             if obs.nearCheck(point,self.minDistance):
-                return False,obs
-        return True, None
+                o.append(obs)
+        if len(o)>=1:
+            return True,o
+        return False, None
     
     #Leave this here for a moment to normalize for visualization purposes
     def fit(self, array, nmax):
@@ -122,7 +131,7 @@ class Agent:
                 if self.curPos[1]+y>=0 and self.curPos[1]+y< self.mapSize[1] and self.curPos[0]+x>=0 and self.curPos[0]+x<= self.mapSize[0] and fmap[self.curPos[1]+y][self.curPos[0]+x]<best:
                     best=fmap[self.curPos[1]+y][self.curPos[0]+x]
                     bestPos=(self.curPos[0]+x,self.curPos[1]+y)
-        print bestPos
+#        print bestPos
         return bestPos
                 
     
@@ -146,6 +155,7 @@ def fit(array, nmax):
     
 #TESTING AREA
 obstacles=[CircleObstacle(50,60,20),CircleObstacle(150,75,35)]
+#,CircleObstacle(150,130,10)
 start=(10,60)
 goal=(210,75)
 mapSize=(230,150)
@@ -156,9 +166,11 @@ a=Agent(start,goal,mapSize,obstacles,minDistance)
 #img=FMG.computeField()
 plan,fmap=a.run()
 fmap=fit(fmap,255)
-print plan
+print len(plan)
 for elt in plan:
     fmap[elt[1]][elt[0]]=255#-fmap[elt[1]][elt[0]]
 
 
+
 cv2.imwrite("test.jpg",fmap)
+
