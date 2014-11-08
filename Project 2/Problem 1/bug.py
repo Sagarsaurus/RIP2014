@@ -40,11 +40,10 @@ class BugAlgorithm:
                 bugPos, additionalPoints = obstacle.collisionPointSet(bugPos, self.goal)
             elif bug == 2:
                 bugPos, additionalPoints = obstacle.collisionPointSetBug2(bugPos, muLine)
+            self.path += additionalPoints
             currentDirection = (self.goal - bugPos)
             bugPos += currentDirection / 1000 #inch the bug off of the obstacle to avoid raycasting into the obstacle again
             currentDirection = (self.goal - bugPos)
-            self.path += additionalPoints 
-
 
 
 def main():
@@ -79,6 +78,9 @@ def main():
 
     bug = domain2
 
+    max_y = 200
+    offset_x = 100
+
     pygame.init()
 
     # Set the width and height of the screen [width, height]
@@ -99,8 +101,10 @@ def main():
     path_to_tuples = []
 
     for v in bug.path:
-        path_to_tuples.append(v.to_tuple())
         print v
+        tupleV = v.to_tuple()
+        tupleV = (offset_x + tupleV[0], max_y - tupleV[1])
+        path_to_tuples.append(tupleV)
 
     # -------- Main Program Loop -----------
     while not done:
@@ -124,8 +128,8 @@ def main():
         # Draw obstacles if they exist
 
         # Draw path for bug
-        for position in path_to_tuples:
-            pygame.draw.circle(screen, GREEN, position, 1, 0)
+        #for position in path_to_tuples:
+           #pygame.draw.circle(screen, GREEN, position, 1, 0)
 
         pygame.draw.lines(screen, GREEN, False, path_to_tuples)
 

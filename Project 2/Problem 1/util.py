@@ -97,14 +97,6 @@ class Line:
             t = (q - p).cross(s) / rXs
             u = (p - q).cross(r) / sXr
             if t >= 0 and  (not limitedRay or t <= 1) and u >=0 and u <= 1:
-                #print "q ", q
-                #print "s ", s
-                #print "p ", p
-                #print "r ", r
-                #print "t ", t
-                #print "u ", u
-                #print "qsu ", q + s * u 
-                #print "prt ", p + r * t
                 return q + s * u
             else:
                 return None
@@ -116,14 +108,6 @@ class Line:
 
         proj = bNorm * a.dot(bNorm) + self.start
         dist = (point - proj).magnitude()
-
-        #print "start ", self.start
-        #print "finish ", self.finish
-        #print "point ", point
-        #print "a ", a
-        #print "b ", b
-        #print "proj ", proj
-        #print "dot ", (a - (proj - self.start)).dot(b)
 
         assert (a - (proj - self.start)).dot(b) == 0 
 
@@ -161,7 +145,6 @@ class Line:
                         break
                 if found:
                     break
-            print currentPoint
         if intersectionStop == None:
             return points, remainingLength
         else:
@@ -202,16 +185,12 @@ class PolygonObstacle(Obstacle):
         pointsHit = sorted(pointsHit, key = lambda x: (start - x).magnitude())
         return pointsHit
 
-
     def collisionPointSet(self, pointStart, goal, direction = False):
         hitLine = None
         for line in self.lines:
             if line.isOn(pointStart):
                 hitLine = line
-                print line.start
-                print line.finish
         if hitLine == None:
-            print point
             closest = float("inf")
             closestPoint = pointStart
             for line in self.lines:
@@ -221,7 +200,7 @@ class PolygonObstacle(Obstacle):
                     hitLine = line
                     closestPoint = point
             pointStart = closestPoint
-        points = [pointStart]
+        points = []
         lineIndex = self.lines.index(hitLine)
         closest = float("inf")
         closestLine = hitLine
@@ -246,7 +225,6 @@ class PolygonObstacle(Obstacle):
 
     def collisionPointSetBug2(self, pointStart, muLine):
         hitLine = None
-        print pointStart
         for line in self.lines:
             if line.isOn(pointStart):
                 hitLine = line
@@ -297,31 +275,34 @@ class CircleObstacle(Obstacle):
     def __init__(self, x, y, r):
         self.x = x
         self.y = y
+        self.c = Vector2(x, y)
         self.r = r
 
     def collisionPointSet(self, pointStart, goal):
         radPer1Unit = 1.0 / float(self.r)
         startAngle = math.atan2(pointStart.y - self.y, pointStart.x - self.x)
         angle = startAngle
-        points = [pointStart]
+        points = []
         minDist = float("inf")
-        closestPos = Vector2(0.0,0.0)
+        goalDist = (goal - Vector2(self.x, self.y))
+        closestAngle = math.atan2(goalDist.y, goalDist.x)
+        closestPoint = self.c + goalDist.norm() * self.r
         while angle < startAngle + 2 * math.pi:
             angle += radPer1Unit
-            point = Vector2(self.r * math.cos(angle) + self.x, self.r * math.sin(angle) + self.y)
-            distance = (goal - point).magnitude()
-            if distance < minDist:
-                minDist = distance
-                closestPos = point
-            points.append(point)
-            print point
+            points.append(self.c + Vector2(math.cos(angle), math.sin(angle)) * self.r)
         pointsCopy = points[:]
-        for i in points:
-            pointsCopy.append(i)
-            if i != closestPos:
+        angle = startAngle + radPer1Unit
+        if closestAngle < angle:
+            closestAngle += 2 * math.pi
+        i = 0
+        while angle + i * radPer1Unit < closestAngle:
+            if angle + (i + 1) * radPer1Unit >= closestAngle:
+                pointsCopy.append(closestPoint)
                 break
-            print i
-        return closestPos, pointsCopy
+            else:
+                pointsCopy.append(points[i])
+            i += 1
+        return closestPoint, pointsCopy
 
     def collisionPointSetBug2(self, pointStart, muLine):
         radPer1Unit = 1.0 / float(self.r)
@@ -335,7 +316,6 @@ class CircleObstacle(Obstacle):
             angle += radPer1Unit
             point = Vector2(self.r * math.cos(angle) + self.x, self.r * math.sin(angle) + self.y)
             points.append(point)
-            print point
             tempAngle = angle
             found = False
             while tempAngle < angle + radPer1Unit:
@@ -343,12 +323,55 @@ class CircleObstacle(Obstacle):
                 if muLine.isOn(point):
                     found = True
                     points.append(point)
-                    print point
                     break
                 tempAngle += radPer1Unit / 1000
             if found:
                 break
         return points[-1], points
+
+    def raycast(self, start, direction, limitedRay = False):
+        E = start
+        L = start + direction
+        C = self.c
+        r = self.r
+
+        d = direction
+        f = E - C
+
+        a = d.dot(d)
+        b = 2*f.dot(d)
+        c = f.dot(f) - r ** 2
+
+        disc = b ** 2 - 4*a*c
+
+        #print "d ", d
+        #print "f ", f
+        #print "a ", a
+        #print "b ", b
+        #print "c ", c
+        #print "disc ", disc
+
+        if a <= 0 or disc < 0:
+            return None
+        elif disc == 0:
+            t = -b / (2 * b)
+            if t >= 0 and (not limitedRay or t <= 1):
+                return [E + d *t]
+            else:
+                return None
+        else:
+            #print "sqrt disc ", math.sqrt(disc)
+            t1 = (-b + math.sqrt(disc)) / (2 * a)
+            t2 = (-b - math.sqrt(disc)) / (2 * a)
+
+            returnValues = []
+            if t1 >= 0 and (not limitedRay or t1 <= 1):
+                returnValues.append(E + d * t1)
+            if t2 >= 0 and (not limitedRay or t2 <= 1):
+                returnValues.append(E + d * t2)
+
+            return returnValues
+
 
     def collisionCheck(self, point):
         return (point - Vector2(self.x, self.y)).magnitude() < self.r
