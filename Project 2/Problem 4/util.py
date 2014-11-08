@@ -385,7 +385,6 @@ class CircleObstacle(Obstacle):
             else:
                 return None
         else:
-            #print "sqrt disc ", math.sqrt(disc)
             t1 = (-b + math.sqrt(disc)) / (2 * a)
             t2 = (-b - math.sqrt(disc)) / (2 * a)
 
