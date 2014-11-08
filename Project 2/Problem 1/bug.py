@@ -28,27 +28,22 @@ class BugAlgorithm:
         bugPos = self.start
         self.path = [bugPos]
         muLine = Line(self.start, self.goal)
+        currentDirection = (self.goal - bugPos) #.norm()
         while not self.atGoal(bugPos):
-            currentDirection = (self.goal - bugPos).norm()
-            while self.collisionCheck(bugPos + currentDirection) is None and not self.atGoal(bugPos):
-                if (self.goal - bugPos).magnitude() <= currentDirection.magnitude():
-                    bugPos = self.goal
-                    self.path += [bugPos]
-                    print bugPos
-                    break
-                else:
-                    bugPos += currentDirection
-                    self.path += [bugPos]
-                    print bugPos
-                    currentDirection = (self.goal - bugPos).norm()
+            hitPoints = raycast(bugPos, currentDirection, self.obstacles, limitedRay = True)
+            bugPos = hitPoints[0][0] #Get closest point hit by ray
+            self.path += [bugPos]
             if self.atGoal(bugPos):
                 break
-            obstacle = self.collisionCheck(bugPos + currentDirection)
+            obstacle = hitPoints[0][1]
             if bug == 1:
-                bugPos, additionalPoints = obstacle.collisionPointSet(bugPos + currentDirection, self.goal)
+                bugPos, additionalPoints = obstacle.collisionPointSet(bugPos, self.goal)
             elif bug == 2:
-                bugPos, additionalPoints = obstacle.collisionPointSetBug2(bugPos + currentDirection, muLine)
-            self.path += additionalPoints
+                bugPos, additionalPoints = obstacle.collisionPointSetBug2(bugPos, muLine)
+            currentDirection = (self.goal - bugPos)
+            bugPos += currentDirection / 1000 #inch the bug off of the obstacle to avoid raycasting into the obstacle again
+            currentDirection = (self.goal - bugPos)
+            self.path += additionalPoints 
 
 
 
@@ -82,7 +77,7 @@ def main():
 
     domain2 = BugAlgorithm(start_position, goal_position, obstacles, angle_change)
 
-    bug = domain1
+    bug = domain2
 
     pygame.init()
 
@@ -98,13 +93,14 @@ def main():
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
 
-    # Run bug 1
-    bug.run(bug = 2)
+    # Run bug 
+    bug.run(bug = 1)
 
     path_to_tuples = []
 
     for v in bug.path:
         path_to_tuples.append(v.to_tuple())
+        print v
 
     # -------- Main Program Loop -----------
     while not done:
@@ -130,6 +126,8 @@ def main():
         # Draw path for bug
         for position in path_to_tuples:
             pygame.draw.circle(screen, GREEN, position, 1, 0)
+
+        pygame.draw.lines(screen, GREEN, False, path_to_tuples)
 
         # Draw obstacles
         if obstacles:
