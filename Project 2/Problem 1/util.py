@@ -55,6 +55,9 @@ class Vector2:
     def norm(self):
         return self / self.magnitude()
 
+    def angle(self):
+        return math.atan2(self.y, self.x)
+
     def to_tuple(self):
         return int(self.x), int(self.y)
 
@@ -223,25 +226,48 @@ class PolygonObstacle(Obstacle):
                 points.append(self.lines[i].start if direction else self.lines[i].finish)
         return closestPos, points
 
-    def collisionPointSetBug2(self, pointStart, muLine):
+    def collisionPointSetBug2(self, pointStart, muLine, direction = False):
         hitLine = None
+        muStart = muLine.start
+        goal = muLine.finish
+        muMove = muLine.move
+        muNorm = muMove.norm()
         for line in self.lines:
             if line.isOn(pointStart):
                 hitLine = line
         if hitLine == None:
-            raise Exception()
-        else:
-            points = [pointStart]
-            startLength = (pointStart - hitLine.start).magnitude()
-            remainingLength = startLength - 1
-            lineIndex = self.lines.index(hitLine)
-            found = False
-            while True:
-                found, additionalPoints, remainingLength = self.lines[lineIndex].getPoints(remainingLength, 1, intersectionStop = muLine)
-                points += additionalPoints
-                lineIndex = lineIndex + 1 if lineIndex + 1 < len(self.lines) else 0
-                if found:
-                    return points[-1], points
+            closest = float("inf")
+            closestPoint = pointStart
+            for line in self.lines:
+                dist, point = line.pointProjection(pointStart)
+                if dist < closest:
+                    closest = dist
+                    hitLine = line
+                    closestPoint = point
+            pointStart = closestPoint
+        dist = (goal - pointStart).magnitude()
+        points = []
+        closestPos = pointStart
+        lineIndex = self.lines.index(hitLine)
+        while True:
+            line = self.lines[lineIndex]
+            rayHit = line.rayCollision(muStart, muMove)
+            if rayHit is not None and self.sidedCheck(rayHit, goal) and (goal - rayHit).magnitude() < dist:
+                closestPos = rayHit
+                points.append(rayHit)
+                break
+            else:
+                points.append(line.start if direction else line.finish)
+            lineIndex += -1 if direction else 1
+            if lineIndex >= len(self.lines):
+                lineIndex = 0
+        return closestPos, points
+
+    def sidedCheck(self, rayHit, goal):
+        delta = (goal - rayHit).norm() / 10
+        toward = self.collisionCheck(rayHit + delta)
+        away = self.collisionCheck(rayHit - delta)
+        return not toward and away
 
 
 class RectangleObstacle(Obstacle):
@@ -280,12 +306,12 @@ class CircleObstacle(Obstacle):
 
     def collisionPointSet(self, pointStart, goal):
         radPer1Unit = 1.0 / float(self.r)
-        startAngle = math.atan2(pointStart.y - self.y, pointStart.x - self.x)
+        startAngle = (pointStart  - self.c).angle()
         angle = startAngle
         points = []
         minDist = float("inf")
         goalDist = (goal - Vector2(self.x, self.y))
-        closestAngle = math.atan2(goalDist.y, goalDist.x)
+        closestAngle = goalDist.angle()
         closestPoint = self.c + goalDist.norm() * self.r
         while angle < startAngle + 2 * math.pi:
             angle += radPer1Unit
@@ -306,28 +332,34 @@ class CircleObstacle(Obstacle):
 
     def collisionPointSetBug2(self, pointStart, muLine):
         radPer1Unit = 1.0 / float(self.r)
-        startAngle = math.atan2(pointStart.y - self.y, pointStart.x - self.x)
-        muLineNorm = muLine.move.norm()
+        startAngle = (pointStart  - self.c).angle()
+        muStart = muLine.start
+        goal = muLine.finish
+        muMove = muLine.move
+        hitPoints = self.raycast(muStart, muMove, limitedRay = True)
+        closestPoint = pointStart
+        closestAngle = startAngle
+        if hitPoints is None or len(hitPoints) <= 0:
+            raise Exception()
+        elif len(hitPoints) == 1:
+            closestPoint = hitPoints[0]
+        else:
+            d1 = (goal - hitPoints[0]).magnitude()
+            d2 = (goal - hitPoints[1]).magnitude()
+            closestPoint = hitPoints[0] if d1 < d2 else hitPoints[1]
+        closestAngle = (closestPoint - self.c).angle()
         angle = startAngle
-        points = [pointStart]
-        minDist = float("inf")
-        closestPos = Vector2(0.0,0.0)
-        while True:
+        points = []
+        if closestAngle < angle:
+            closestAngle += 2 * math.pi
+        while angle < closestAngle:
             angle += radPer1Unit
-            point = Vector2(self.r * math.cos(angle) + self.x, self.r * math.sin(angle) + self.y)
-            points.append(point)
-            tempAngle = angle
-            found = False
-            while tempAngle < angle + radPer1Unit:
-                point = Vector2(self.r * math.cos(tempAngle) + self.x, self.r * math.sin(tempAngle) + self.y)
-                if muLine.isOn(point):
-                    found = True
-                    points.append(point)
-                    break
-                tempAngle += radPer1Unit / 1000
-            if found:
+            if angle >= closestAngle:
+                points.append(closestPoint)
                 break
-        return points[-1], points
+            else:
+                points.append(self.c + Vector2(math.cos(angle), math.sin(angle)) * self.r)
+        return closestPoint, points
 
     def raycast(self, start, direction, limitedRay = False):
         E = start

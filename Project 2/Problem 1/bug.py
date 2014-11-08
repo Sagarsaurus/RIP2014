@@ -96,7 +96,7 @@ def main():
     clock = pygame.time.Clock()
 
     # Run bug 
-    bug.run(bug = 1)
+    bug.run(bug = 2)
 
     path_to_tuples = []
 
@@ -131,15 +131,21 @@ def main():
         #for position in path_to_tuples:
            #pygame.draw.circle(screen, GREEN, position, 1, 0)
 
-        pygame.draw.lines(screen, GREEN, False, path_to_tuples)
-
         # Draw obstacles
-        if obstacles:
-            for obstacle in obstacles:
-                if isinstance(obstacle, RectangleObstacle):
-                    pygame.draw.rect(screen, BLACK, pygame.Rect(obstacle.get_position(), obstacle.get_dimensions()))
+        if bug.obstacles:
+            for obstacle in bug.obstacles:
+                if isinstance(obstacle, PolygonObstacle):
+                    vert = obstacle.points
+                    tupVert = []
+                    for vertex in vert:
+                        tup = vertex.to_tuple()
+                        tupVert += [(offset_x + tup[0], max_y - tup[1])]
+                    pygame.draw.polygon(screen, BLACK, tupVert)
                 elif isinstance(obstacle, CircleObstacle):
                     pygame.draw.circle(screen, BLACK, obstacle.get_position(), obstacle.get_radius(), 0)
+
+        
+        pygame.draw.lines(screen, GREEN, False, path_to_tuples)
 
         # pygame.draw.circle(screen, GREEN, bug1.bugPosition.to_tuple(), 10, 0)
 
