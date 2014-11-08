@@ -8,16 +8,19 @@ def inRange(a, b, c, inclusive = False):
 
 def raycast(startPoint, direction, obstacles, limitedRay = False):
     allCollisions = []
+    if limitedRay:
+        allCollisions.append((startPoint + direction, None))
     for obstacle in obstacles:
         pointsHit = obstacle.raycast(startPoint, direction, limitedRay)
-        allCollisions  += [(x, obstacle) for x in pointsHit]
+        allCollisions += [(x, obstacle) for x in pointsHit]
+    allCollisions = sorted(allCollisions, key = lambda x: (startPoint - x[0]).magnitude())
     return allCollisions
 
 class Vector2:
 
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        self.x = float(x)
+        self.y = float(y)
 
     def __add__(self, other):
         return Vector2(self.x + other.x, self.y + other.y)
@@ -67,7 +70,7 @@ class Line:
     def isOn(self, point, tolerance = 0.1):
         ab = self.move
         ac = point - self.start
-        cross = ac.y * ab.x - ac.x * ab.y
+        cross = ab.cross(ac)
         if abs(cross) > tolerance:
             return False
         dot = ac.dot(ab)
@@ -86,19 +89,54 @@ class Line:
         r = rayDirection
 
         rXs = r.cross(s)
-        qpXr = (q - p).cross(r)
-        pqXr = (p - q).cross(r)
+        sXr = s.cross(r)
 
-        if rXs == 0: #line and ray are collinear
+        if rXs == 0 or sXr == 0: #line and ray are collinear
             return None
         else: 
-            t = qpXr / rXs
-            u = pqXr / rXs
-            if t >= 0 and  (limitedRay or t <= 1) and u >=0 and u <= 1:
-                assert q + s * u == p + r * t
+            t = (q - p).cross(s) / rXs
+            u = (p - q).cross(r) / sXr
+            if t >= 0 and  (not limitedRay or t <= 1) and u >=0 and u <= 1:
+                #print "q ", q
+                #print "s ", s
+                #print "p ", p
+                #print "r ", r
+                #print "t ", t
+                #print "u ", u
+                #print "qsu ", q + s * u 
+                #print "prt ", p + r * t
                 return q + s * u
             else:
                 return None
+
+    def pointProjection(self, point):
+        a = point - self.start
+        b = self.move
+        bNorm = b.norm()
+
+        proj = bNorm * a.dot(bNorm) + self.start
+        dist = (point - proj).magnitude()
+
+        #print "start ", self.start
+        #print "finish ", self.finish
+        #print "point ", point
+        #print "a ", a
+        #print "b ", b
+        #print "proj ", proj
+        #print "dot ", (a - (proj - self.start)).dot(b)
+
+        assert (a - (proj - self.start)).dot(b) == 0 
+
+        if self.isOn(proj):
+            return dist, proj
+        else:
+            startDis = (point - self.start).magnitude()
+            finishDis = (point - self.finish).magnitude()
+            if finishDis < startDis:
+                return finishDis, self.finish
+            else:
+                return startDis, self.start
+
 
     def getPoints(self, startLength, step, stop = -1, intersectionStop = None, intersectionStep = 10):
         direction = self.move.norm()
@@ -113,7 +151,7 @@ class Line:
         while remainingLength >= step:
             currentPoint += direction * step
             remainingLength -= step
-            points += [currentPoint]
+            points.append(currentPoint)
             currentMinorStep = currentPoint
             if intersectionStop != None:
                 for i in range(intersectionStep):
@@ -148,11 +186,11 @@ class PolygonObstacle(Obstacle):
         self.points = points
         self.lines = []
         for i in range(-1, len(points) - 1):
-            self.lines += [Line(points[i], points[i + 1])]
+            self.lines.append(Line(points[i], points[i + 1]))
         assert len(points) == len(self.lines)
 
     def collisionCheck(self, point):
-        pointsHit = len(self.raycast(point, Vector(1,0)))
+        pointsHit = len(self.raycast(point, Vector2(1,0)))
         return (pointsHit % 2) != 0
 
     def raycast(self, start, direction, limitedRay = False):
@@ -160,56 +198,68 @@ class PolygonObstacle(Obstacle):
         for line in self.lines:
             collision = line.rayCollision(start, direction, limitedRay)
             if collision is not None:
-                pointsHit += [collision]
-        pointsHit = sort(pointsHit, key = lambda x: (point - x).magnitude())
+                pointsHit.append(collision)
+        pointsHit = sorted(pointsHit, key = lambda x: (start - x).magnitude())
         return pointsHit
 
 
-    def collisionPointSet(self, pointStart, goal):
+    def collisionPointSet(self, pointStart, goal, direction = False):
         hitLine = None
         for line in self.lines:
             if line.isOn(pointStart):
                 hitLine = line
+                print line.start
+                print line.finish
         if hitLine == None:
-            raise Exception()
-        else:
-            points = []
-            startLength = (pointStart - hitLine.start).magnitude()
-            remainingLength = startLength
-            lineIndex = self.lines.index(hitLine)
-            for i in range(lineIndex, len(self.lines)):
-                additionalPoints, remainingLength = self.lines[i].getPoints(remainingLength, 1)
-                points += additionalPoints
-            for i in range(lineIndex):
-                additionalPoints, remainingLength = self.lines[i].getPoints(remainingLength, 1)
-                points += additionalPoints
-            additionalPoints, remainingLength = hitLine.getPoints(remainingLength, 1, stop = startLength)
-            points += additionalPoints
-            pointsCopy = points[:]
-            distances = [(goal - x).magnitude() for x in points]
-            closestPos = pointsCopy[distances.index(min(distances))]
-            for i in pointsCopy:
-                points += [i]
-                print i
-                if i == closestPos:
-                    break;
-            return closestPos, points
+            print point
+            closest = float("inf")
+            closestPoint = pointStart
+            for line in self.lines:
+                dist, point = line.pointProjection(pointStart)
+                if dist < closest:
+                    closest = dist
+                    hitLine = line
+                    closestPoint = point
+            pointStart = closestPoint
+        points = [pointStart]
+        lineIndex = self.lines.index(hitLine)
+        closest = float("inf")
+        closestLine = hitLine
+        closestPos = pointStart
+        seq =  range(lineIndex, lineIndex - len(self.lines), -1) if direction else range(lineIndex - len(self.lines), lineIndex)
+        for i in seq:
+            point = self.lines[i].start if direction else self.lines[i].finish
+            points.append(self.lines[i].start if direction else self.lines[i].finish)
+            dist, point = self.lines[i].pointProjection(goal)
+            if dist < closest:
+                closest = dist
+                closestLine = i
+                closestPos = point
+        points.append(pointStart)
+        for i in seq:
+            if i == closestLine:
+                points += [closestPos]
+                break
+            else:
+                points.append(self.lines[i].start if direction else self.lines[i].finish)
+        return closestPos, points
 
     def collisionPointSetBug2(self, pointStart, muLine):
         hitLine = None
+        print pointStart
         for line in self.lines:
             if line.isOn(pointStart):
                 hitLine = line
         if hitLine == None:
             raise Exception()
         else:
-            points = [startPoint]
+            points = [pointStart]
             startLength = (pointStart - hitLine.start).magnitude()
             remainingLength = startLength - 1
             lineIndex = self.lines.index(hitLine)
             found = False
             while True:
-                found, additionalPoints, remainingLength = self.lines[lineIndex].getPoints(remainingLength, 1, muLine)
+                found, additionalPoints, remainingLength = self.lines[lineIndex].getPoints(remainingLength, 1, intersectionStop = muLine)
                 points += additionalPoints
                 lineIndex = lineIndex + 1 if lineIndex + 1 < len(self.lines) else 0
                 if found:
@@ -263,11 +313,11 @@ class CircleObstacle(Obstacle):
             if distance < minDist:
                 minDist = distance
                 closestPos = point
-            points += [point]
+            points.append(point)
             print point
         pointsCopy = points[:]
         for i in points:
-            pointsCopy += [i]
+            pointsCopy.append(i)
             if i != closestPos:
                 break
             print i
@@ -284,7 +334,7 @@ class CircleObstacle(Obstacle):
         while True:
             angle += radPer1Unit
             point = Vector2(self.r * math.cos(angle) + self.x, self.r * math.sin(angle) + self.y)
-            points += [point]
+            points.append(point)
             print point
             tempAngle = angle
             found = False
@@ -292,7 +342,7 @@ class CircleObstacle(Obstacle):
                 point = Vector2(self.r * math.cos(tempAngle) + self.x, self.r * math.sin(tempAngle) + self.y)
                 if muLine.isOn(point):
                     found = True
-                    points += [point]
+                    points.append(point)
                     print point
                     break
                 tempAngle += radPer1Unit / 1000
