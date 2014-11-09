@@ -11,7 +11,7 @@ J = jacobian(f, q)
 
 
 x_i =  [2.6, 1.3,  1.0];
-x_f = [-1.4 1.6, -2.0];
+x_f = [1.4 1.6, -2.0];
 
 %Inverse Kinematics of initial configuration
 X2 = x_i(1) - l(3) * cos(x_i(3));      %X2 = X - l3cos(theta)
