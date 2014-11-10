@@ -399,8 +399,15 @@ class CircleObstacle(Obstacle):
 
 
     def collisionCheck(self, point):
-        return (point - Vector2(self.x, self.y)).magnitude() < self.r
+        return (Vector2(point[0],point[1]) - Vector2(self.x, self.y)).magnitude() < self.r
 
+    def nearCheck(self, point, minDistance):
+#        print "This", (Vector2(point[0],point[1]) - Vector2(self.x, self.y)).magnitude()
+        return (Vector2(point[0],point[1]) - Vector2(self.x, self.y)).magnitude() < (self.r+minDistance)
+        
+    def distanceTo(self, point):
+        return (Vector2(point[0],point[1]) - Vector2(self.x, self.y)).magnitude()-self.r
+        
     def get_position(self):
         return int(self.x), int(self.y)
 

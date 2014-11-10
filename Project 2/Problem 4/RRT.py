@@ -41,15 +41,13 @@ class RRT:
             closestPoint=self.findClosestPoint(point)
 #            newLine=Line(point,closestPoint)
             if len(raycast(Vector2(point[0],point[1]), Vector2(closestPoint[0],closestPoint[1]), self.obstacles, limitedRay = True))<1:
-                treeNodes.append(point)
+                self.treeNodes.append(point)
             
             k+=1
             
     def findClosestPoint(self,point):
-        #Come back and fix this value, it threw up an error the appropriate was I was doing it
-        closestVal=100000
+        closestVal=self.mapSize[0]+self.mapSize[1]
         closestPoint=None
-        
         pVector=Vector2(point[1],point[1])
         for tPoint in self.treePoints:
             val=(pVector-Vector2(tPoint[0],tPoint[1])).magnitude()

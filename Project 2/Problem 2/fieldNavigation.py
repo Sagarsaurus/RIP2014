@@ -6,23 +6,50 @@ Created on Tue Nov 04 21:13:07 2014
 """
 
 import math
-import numpy as np
 from util import *
+import numpy as np
 import cv2
 
+def init2D(width, height, value=0):
+    newList=[]
+    temp=[]
+    for i in range(0,width):
+        for j in range(0,height):
+            temp.append(value)
+        newList.append(temp)
+        temp=[]
+    return newList
+    
 class FieldMapGenerator:
     def __init__(self, mapSize, goal, obstacles,minDistance):
         self.mapSize=mapSize
         self.obstacles=obstacles
         self.goal=goal
         self.minDistance=minDistance
-        self.map=np.zeros((mapSize[1],mapSize[0]))
+        self.map=init2D(mapSize[1],mapSize[0])
     
     def computeField(self):
         self.attractionField()
         self.repulsionField()
-        self.map=cv2.GaussianBlur(self.map,(5,5),0)
+        self.map=self.boxFilter(5)
         return self.map
+    
+    def boxFilter(self,winSize):
+        temp=init2D(self.mapSize[1],self.mapSize[0])
+        for x in range(self.mapSize[0]):
+            for y in range(self.mapSize[1]):
+                s=0
+                count=0
+                for i in range(-winSize,winSize):
+                    for j in range(-winSize,winSize):
+
+                        if x+i>0 and y+j>0 and x+i<self.mapSize[0] and y+j<self.mapSize[1]:
+                            s+=self.map[y][x]
+                            count+=1
+                temp[y][x]=s/count
+        return temp
+                         
+                        
     
     #to start this will just compute linear distance function (Quadradic to be added later)
     def attractionField(self):
@@ -30,27 +57,25 @@ class FieldMapGenerator:
             for x in range(len(self.map[0])):
                 self.map[y][x]+=math.sqrt(pow(self.goal[0]-x,2)+pow(self.goal[1]-y,2))
         return self.map
+    
+#    def applyGaussian(winSize,sigma):
         
+    
     def repulsionField(self):
-        for x in range(len(self.map[0])):
-            for y in range(len(self.map)):
+        for x in range(self.mapSize[0]):
+            for y in range(self.mapSize[1]):
                 hitSomething,hitWhat= self.collisionCheck((x,y))
                 if hitSomething:
                     #I believe the factor v here is up to me, try a couple
                     v=4000
                     highestPoint=0
                     for o in hitWhat:
-                    
                         if o.distanceTo((x,y))<=0:
-    #                        print "255"
                             highestPoint=255
                         else:
-                            
                             if .5*v*pow(1/o.distanceTo((x,y))-1/self.minDistance,2)>255:
-    #                            print 255
                                 highestPoint=255
                             else:
-    #                            print .5*v*pow(1/hitWhat.distanceTo((x,y))-1/self.minDistance,2)
                                 num=.5*v*pow(1/o.distanceTo((x,y))-1/self.minDistance,2)
                                 if num>highestPoint:
                                     highestPoint=num
@@ -98,40 +123,24 @@ class Agent:
         
         fmapGen=FieldMapGenerator(mapSize,goal,obstacles,minDistance)
         fmap=fmapGen.computeField()
-        
+        print "Made the map"
         while not self.atGoal(self.curPos):
             nextPos=self.chooseNext(fmap)
             if nextPos==self.curPos and not self.atGoal(self.curPos):
                 print "Algorithm got stuck"
                 break;
             self.plan.append(nextPos)
-#            print nextPos
             self.curPos=nextPos
-#        print self.curPos
-#        print self.goal
         return self.plan,fmap
             
     def chooseNext(self,fmap):
         best=fmap[self.curPos[1]][self.curPos[0]]
         bestPos=self.curPos
-#        print "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-#        print best
-#        print bestPos
         for x in range(-1,2):
             for y in range(-1,2):
-#                print "X:",x
-#                print "Y:", y
-#                print fmap[bestPos[1]+y][bestPos[0]+x]
-#                print self.curPos[1]+y>=0
-#                print self.curPos[1]+y< self.mapSize[0]
-#                print self.curPos[0]+x>=0 
-#                print self.mapSize[1]
-#                print self.curPos[0]+x
-#                print self.curPos[0]+x<= self.mapSize[1]
                 if self.curPos[1]+y>=0 and self.curPos[1]+y< self.mapSize[1] and self.curPos[0]+x>=0 and self.curPos[0]+x<= self.mapSize[0] and fmap[self.curPos[1]+y][self.curPos[0]+x]<best:
                     best=fmap[self.curPos[1]+y][self.curPos[0]+x]
                     bestPos=(self.curPos[0]+x,self.curPos[1]+y)
-#        print bestPos
         return bestPos
                 
     
@@ -161,6 +170,9 @@ goal=(210,75)
 mapSize=(230,150)
 minDistance=30
 
+#fmg=FieldMapGenerator(mapSize, goal, obstacles,minDistance)
+#fmg.repulsionField()
+
 a=Agent(start,goal,mapSize,obstacles,minDistance)
 #FMG=FieldMapGenerator(mapSize, goal, obstacles,minDistance)
 #img=FMG.computeField()
@@ -172,5 +184,5 @@ for elt in plan:
 
 
 
-cv2.imwrite("test.jpg",fmap)
+cv2.imwrite("test.jpg",np.array(fmap))
 
