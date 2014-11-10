@@ -1,5 +1,9 @@
 import math
 
+def lerp(a, b, t):
+    diff = b - a
+    return a + t * diff
+
 def inRange(a, b, c, inclusive = False):
     if inclusive:
         return a >= b and a <= c

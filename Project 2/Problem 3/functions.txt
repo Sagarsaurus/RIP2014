@@ -1,0 +1,19 @@
+Assuming l1 = 2, l2 = 2, l3 = 1
+
+f = 
+
+ cos(q1 + q2 + q3) + 2*cos(q1 + q2) + 2*cos(q1)
+ sin(q1 + q2 + q3) + 2*sin(q1 + q2) + 2*sin(q1)
+                                   q1 + q2 + q3
+
+j = 
+
+[ - sin(q1 + q2 + q3) - 2*sin(q1 + q2) - 2*sin(q1), - sin(q1 + q2 + q3) - 2*sin(q1 + q2), -sin(q1 + q2 + q3)]
+[   cos(q1 + q2 + q3) + 2*cos(q1 + q2) + 2*cos(q1),   cos(q1 + q2 + q3) + 2*cos(q1 + q2),  cos(q1 + q2 + q3)]
+[                                                1,                                    1,                  1]
+
+J^-1 = 
+
+[            -cos(q1 + q2)/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))),            -sin(q1 + q2)/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))),                                                          (cos(q1 + q2 + q3)*sin(q1 + q2) - sin(q1 + q2 + q3)*cos(q1 + q2))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1)))]
+[ (cos(q1 + q2) + cos(q1))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))), (sin(q1 + q2) + sin(q1))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))), -(cos(q1 + q2 + q3)*sin(q1 + q2) - sin(q1 + q2 + q3)*cos(q1 + q2) + cos(q1 + q2 + q3)*sin(q1) - sin(q1 + q2 + q3)*cos(q1))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1)))]
+[                 -cos(q1)/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))),                 -sin(q1)/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))),                  (cos(q1 + q2 + q3)*sin(q1) - sin(q1 + q2 + q3)*cos(q1) + 2*cos(q1 + q2)*sin(q1) - 2*sin(q1 + q2)*cos(q1))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1)))]
