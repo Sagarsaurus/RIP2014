@@ -1,4 +1,5 @@
 import random
+from util import *
 
 class Rect:
 	TL = 0
@@ -67,13 +68,13 @@ class QuadNode(Node):
 		self.quads = None
 		self.rect = rect
 		self.points = []
+		self.samples = 0
 
 	def addPoint(self, p, limit): 
 		if self.points and self.rect.area() > limit: 
 			self.split(limit)
 			quad = self.rect.quad(p)
 			quads[quad].addPoint(p)
-		print(self.rect, p)
 		self.points += [p]
 
 	def split(self, limit):
@@ -84,38 +85,41 @@ class QuadNode(Node):
 	def distance(self, l, r): 
 		return (l.x-r.x)**2 + (l.y-r.y)**2
 
-	def samplePoint(self, limit):
-		sample = None
+	def samplePoint(self, limit, collision):
+		sample = None, None
 		if self.rect.area() < limit or not self.points: 
-			sample = self.rect.sample(), None
-			print(self.rect, sample[0])
+			s = self.rect.sample()
+			if not collision(s):
+				sample = s, None
 		else: 
 			if len(self.points) == 1: 
 				self.split(limit)
-			small = min(len(quad.points) for quad in self.quads)
-			mins = list(idx for (idx, quad) in enumerate(self.quads) if len(quad.points) == small)
+			small = min(quad.samples for quad in self.quads)
+			mins = list(idx for (idx, quad) in enumerate(self.quads) if quad.samples == small)
 			quad = random.choice(mins)
-			sample = self.quads[quad].samplePoint(limit)
-			if not sample[1]:
+			sample = self.quads[quad].samplePoint(limit, collision)
+			if sample[0] and not sample[1]:
 				val, closest = min((self.distance(sample[0], p), p) for p in self.points)
-				print(closest)
 				sample = sample[0], closest
-		self.points += [sample[0]]
+		if sample[0]: 
+			self.points += [sample[0]]
+		self.samples += 1
 		return sample
 
 class QuadTree(Tree): 
-	def __init__(self, w, h, limit): 
+	def __init__(self, w, h, limit, obstacles): 
 		self.root = QuadNode(Rect(0, 0, w, h))
 		self.limit = limit
-		self.tree = None
+		self.obstacles = obstacles
 
 	def addPoint(self, p):
 		self.root.addPoint(p, self.limit)
 
+	def collision(self, p): 
+		for obstacle in self.obstacles: 
+			if obstacle.collisionCheck(Vector2(p.x, p.y)): 
+				return True
+		return False
+
 	def samplePoint(self): 
-		p, c = self.root.samplePoint(self.limit)
-		if c: 
-			self.tree.add(p, c)
-		else:
-			self.tree = Tree(p)
-		return p
+		return self.root.samplePoint(self.limit, lambda p: self.collision(p))
