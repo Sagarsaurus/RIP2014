@@ -76,6 +76,5 @@ randomTree1=RRT(mapsize,start,goal,[])
 obs=[CircleObstacle(50,60,20),CircleObstacle(150,75,35)]
 randomTree1.baseline()
 
-
 #zArr=np.zeroes((randomTree1.mapSize))
 #cv2.imwrite("test.jpg",randomTree1.points)
