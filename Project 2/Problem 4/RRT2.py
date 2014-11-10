@@ -3,24 +3,21 @@ import tkinter as tk
 from util import *
 
 class RRT:
-	def __init__(self, w, h, limit, obstacles): 
+	def __init__(self, w, h, limit, obstacles, start, goal): 
 		self.w = w
 		self.h = h
-		self.qt = QuadTree(w, h, limit, obstacles)
-		self.tree = None
-
-	def start(self, start): 
+		self.goal = goal
+		self.obstacles = obstacles
+		self.qt = QuadTree(w, h, limit, obstacles, start, goal)
 		self.tree = Tree(start)
-		self.qt.addPoint(start)
 
 	def grow_baseline(self):
 		p, c = self.qt.samplePoint()
 		self.tree.add(p, c)
 		return self.tree.V[-1], self.tree.E[-1]
 
-obstacles = [CircleObstacle(700,500,150),CircleObstacle(150,75,35)]
-rrt = RRT(1024, 768, 16, obstacles)
-rrt.start(Point(500, 350))
+obstacles = [CircleObstacle(500,350,200), CircleObstacle(150,600,120)]
+rrt = RRT(1024, 768, 16, obstacles, Point(100, 100), Point(700, 700))
 
 class App:
 	def __init__(self, master, rrt):

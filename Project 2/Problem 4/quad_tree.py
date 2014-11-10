@@ -54,7 +54,7 @@ class Tree:
 		self.V += [n]
 		self.E += [Edge(p,n)]
 
-class Point(Node): 
+class Point(Node, Vector2): 
 	def __init__(self, x, y): 
 		self.x = x
 		self.y = y
@@ -70,11 +70,17 @@ class QuadNode(Node):
 		self.points = []
 		self.samples = 0
 
+	def getQuad(self, p):
+		quad = self.rect.quad(p)
+		return self.quads[quad]
+
 	def addPoint(self, p, limit): 
+		print(self.rect)
 		if self.points and self.rect.area() > limit: 
 			self.split(limit)
+		if self.quads: 
 			quad = self.rect.quad(p)
-			quads[quad].addPoint(p)
+			self.getQuad(p).addPoint(p, limit)
 		self.points += [p]
 
 	def split(self, limit):
@@ -84,6 +90,9 @@ class QuadNode(Node):
 
 	def distance(self, l, r): 
 		return (l.x-r.x)**2 + (l.y-r.y)**2
+
+	def remove(self, p): 
+		self.points.remove(p)
 
 	def samplePoint(self, limit, collision):
 		sample = None, None
@@ -96,30 +105,46 @@ class QuadNode(Node):
 				self.split(limit)
 			small = min(quad.samples for quad in self.quads)
 			mins = list(idx for (idx, quad) in enumerate(self.quads) if quad.samples == small)
-			quad = random.choice(mins)
-			sample = self.quads[quad].samplePoint(limit, collision)
+			quad = self.quads[random.choice(mins)]
+			sample = quad.samplePoint(limit, collision)
 			if sample[0] and not sample[1]:
 				val, closest = min((self.distance(sample[0], p), p) for p in self.points)
-				sample = sample[0], closest
+				if collision(sample[0], closest): 
+					quad.remove(sample[0])
+					sample = None, None
+				else: sample = sample[0], closest
 		if sample[0]: 
 			self.points += [sample[0]]
 		self.samples += 1
 		return sample
 
 class QuadTree(Tree): 
-	def __init__(self, w, h, limit, obstacles): 
+	def __init__(self, w, h, limit, obstacles, start, goal): 
 		self.root = QuadNode(Rect(0, 0, w, h))
 		self.limit = limit
 		self.obstacles = obstacles
+		self.addPoint(start)
+		self.start = start
+		self.goal = goal
 
 	def addPoint(self, p):
 		self.root.addPoint(p, self.limit)
 
-	def collision(self, p): 
-		for obstacle in self.obstacles: 
-			if obstacle.collisionCheck(Vector2(p.x, p.y)): 
-				return True
+	def collision(self, p, c=None): 
+		if c:
+			for obstacle in self.obstacles: 
+				if obstacle.raycast(p, c - p, limitedRay = True):
+					return True
+		else: 
+			for obstacle in self.obstacles: 
+				if obstacle.collisionCheck(p): 
+					return True
 		return False
 
-	def samplePoint(self): 
-		return self.root.samplePoint(self.limit, lambda p: self.collision(p))
+	def samplePoint(self, towardsGoal=False): 
+		p, c = self.root.samplePoint(self.limit, lambda p, c=None: self.collision(p, c))
+		# if p: 
+		# 	print("add", p)
+		# 	self.addPoint(p)
+		# 	print("added", p)
+		return p, c
