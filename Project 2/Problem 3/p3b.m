@@ -62,8 +62,8 @@ for i = 1 : timeSteps
             fx = -sign(cos(ang)) * Inf;
             fy = -sign(sin(ang)) * Inf;
         elseif fp < alt * R
-             fx = -0.1 * ((alt * R - fp)*cos(d) + (alt * R - fp) * cos(ang));
-             fy = -0.1 * ((alt * R - fp)*sin(d) + (alt * R - fp) * sin(ang));
+             fx = -0.1 * (alt * R - fp) * cos(ang);
+             fy = -0.1 * (alt * R - fp) * sin(ang);
         end
         add(j) = kp * sqrt(fx^2 + fy^2) * (x_f(j) - xV(j));
     end
