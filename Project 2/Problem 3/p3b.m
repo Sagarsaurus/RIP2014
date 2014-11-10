@@ -4,7 +4,7 @@ x = sym('x', [1 3]);
 c = cos(q);
 s = sin(q);
 
-C = [1, 1]
+C = [1, 2]
 R = 1
 
 fx1(q) = l(1)*cos(q(1)); 
@@ -22,12 +22,11 @@ J = jacobian(f, q)
 x_i = [ 2.6, 1.3,  1.0];
 x_f = [-1.4, 1.6, -2.0];
 
-U(q) = sqrt((x_i(1) - fx3)^2 + (x_i(2) - fy3)^2 + (x_i(3) - ft)^2) + ...
-        1 / (R - sqrt((C(1) - fx1)^ 2 + (C(2) - fy1)^2)) + ...
-        1 / (R - sqrt((C(1) - fx2)^ 2 + (C(2) - fy2)^2)) + ...
-        1 / (R - sqrt((C(1) - fx3)^ 2 + (C(2) - fy3)^2))
+xV = x_i;2
+U(x) = sqrt((x_f(1) - x(1))^2 + (x_f(2) - x(2))^2 + (x_f(3) - x(3))^2) + ...
+       (1 / (R - sqrt((C(1) - x(1))^ 2 + (C(2) - x(1))^2))) / 100
 
-gradU = gradient(U, q)
+gradU = gradient(U, x)
 
 qVi = InverseKinematics(x_i, l);
 
@@ -40,14 +39,15 @@ X1 = zeros(timeSteps, 2);
 X2 = zeros(timeSteps, 2);
 X3 = zeros(timeSteps, 2);
 for i = 1 : timeSteps
+    dx = double(- gradU(xV(1), xV(2), xV(3))) / 100
     jV = J(qV(1), qV(2), qV(3));
     invJ = inv(jV);
-    i
-    dq(i,:) = -gradU(qV(1), qV(2), qV(3));
+    dq(i,:) = invJ * dx;
     qV = qV + dq(i,:);
     X1(i,:) = [l(1) * cos(qV(1)), l(1) * sin(qV(1))];
     X2(i,:) = X1(i,:) + [l(2) * cos(qV(1) + qV(2)), l(2) * sin(qV(1) + qV(2))];
     X3(i,:) = X2(i,:) + [l(3) * cos(qV(1) + qV(2) + qV(3)), l(3) * sin(qV(1) + qV(2) + qV(3))];
+    xV = [X3(i,:), sum(qV)];
 end
 X = [zeros(timeSteps, 1), X1(:,1), X2(:,1), X3(:,1)];
 Y = [zeros(timeSteps, 1), X1(:,2), X2(:,2), X3(:,2)];
@@ -59,8 +59,9 @@ while 1
         clf
         plot(X3(:,1), X3(:,2), 'Color', 'green')
         line(X(i,:), Y(i,:));
+        viscircles(C,R);
         axis manual
-        axis([-2, 3, 0, 3])
+        axis([-2, 3, 0, 3]);
         pause(1/600);
     end
 end
