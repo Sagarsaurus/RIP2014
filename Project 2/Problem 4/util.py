@@ -84,6 +84,7 @@ class VectorN:
 
     def norm(self):
         return self / self.magnitude()
+
 class Line:
 
     def __init__(self, start, finish):
@@ -294,29 +295,18 @@ class PolygonObstacle(Obstacle):
 
 class RectangleObstacle(Obstacle):
 
-    def __init__(self, x, y, w, h):
-        self.T = y
-        self.B = y + h
-        self.L = x
-        self.R = x + w
-        self.w = w
-        self.h = h
+    def __init__(self, cX, cY, orientation, width, height):
+        orth = orientation + math.pi / 2
+        orientV = height / 2  * Vector2(math.cos(orientation), math.sin(orientation))
+        orthV = width / 2 * Vector2(math.cos(orth), math.sin(orth))
+        points = [C + orthV + orientV, C + orthV - orientV, C - orthV - orientV, C - orthV + orientV]
+        self.wrapped = PolygonObstacle(points)
 
     def collisionCheck(self, point):
-            return inRange(point.x, self.L, self.R) and\
-                    inRange(point.y, self.T, self.B)
+        return self.wrapped.collisionCheck(point)
 
-    def onEdge(self, point):
-        return (point is VectorN) and\
-               (([self.L, self.R].contains(point.x) and inRange(point.y, self.T, self.B, True)) or
-                ([self.T, self.B].contains(point.y) and inRange(point.x, self.L, self.R, True)))
-
-    def get_position(self):
-        return int(self.L), int(self.T)
-
-    def get_dimensions(self):
-        return int(self.w), int(self.h)
-
+    def raycast(self, start, direction, limitedRay = False):
+        raise self.wrapped.raycast(start, direction, limitedRay)
 
 class CircleObstacle(Obstacle):
 
