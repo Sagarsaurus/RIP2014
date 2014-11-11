@@ -26,8 +26,10 @@ class RRT:
 		return None, None
 
 obstacles = [CircleObstacle(500,350,200), CircleObstacle(150,600,120)]
-obstacles = []
+# obstacles = []
 space = (2*math.pi, 2*math.pi, 2*math.pi)
+# start = RobotArm.inverseKinematics(start.to_tuple(), l)
+# goal = RobotArm.inverseKinematics(goal.to_tuple(), l)
 rrt = RRT(space, 16, RobotArm((200, 200, 400)), obstacles, NPoint((0, 0, 0)), NPoint((3, 3, 3)))
 
 class App:
