@@ -23,10 +23,12 @@ class RRT:
 				old = self.arm.a3
 				self.tree.add(new, old)
 				return self.tree.V[-1], self.tree.E[-1]
+			else:
+				print("hi")
 		return None, None
 
 obstacles = [CircleObstacle(500,350,200), CircleObstacle(150,600,120)]
-obstacles = []
+#obstacles = []
 space = (2*math.pi, 2*math.pi, 2*math.pi)
 rrt = RRT(space, 16, RobotArm((200, 200, 400)), obstacles, NPoint((0, 0, 0)), NPoint((3, 3, 3)))
 
