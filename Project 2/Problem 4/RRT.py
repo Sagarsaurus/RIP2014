@@ -4,24 +4,32 @@ from util import *
 import math
 
 class RRT:
-	def __init__(self, space, limit, obstacles, start, goal): 
+	def __init__(self, space, limit, arm, obstacles, start, goal): 
 		self.space = space
 		self.goal = goal
 		self.obstacles = obstacles
 		self.qt = QuadTree(space, limit, obstacles, start, goal)
 		self.tree = Tree(start)
+		self.arm = arm
 
 	def grow_baseline(self):
-		p, c = self.qt.samplePoint()
+		p, c = self.qt.samplePoint(0.1)
+		print(p,c)
 		if p and c:
-			self.tree.add(p, c)
-			return self.tree.V[-1], self.tree.E[-1]
-		else: return None, None
+			print(p, c)
+			if not self.arm.ArmCollisionCheck(p.components, self.obstacles): 
+				self.qt.addPoint(n)
+				new = self.arm.a3
+				self.arm.setQ(c.components)
+				old = self.arm.a3
+				self.tree.add(new, old)
+				return self.tree.V[-1], self.tree.E[-1]
+		return None, None
 
 obstacles = [CircleObstacle(500,350,200), CircleObstacle(150,600,120)]
 obstacles = []
 space = (2*math.pi, 2*math.pi, 2*math.pi)
-rrt = RRT(space, 16, obstacles, NPoint((0, 0, 0)), NPoint((3, 3, 3)))
+rrt = RRT(space, 16, RobotArm((10, 10, 20)), obstacles, NPoint((0, 0, 0)), NPoint((3, 3, 3)))
 
 class App:
 	def __init__(self, master, rrt, w, h):
