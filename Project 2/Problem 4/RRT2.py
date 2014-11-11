@@ -13,8 +13,10 @@ class RRT:
 
 	def grow_baseline(self):
 		p, c = self.qt.samplePoint()
-		self.tree.add(p, c)
-		return self.tree.V[-1], self.tree.E[-1]
+		if p and c:
+			self.tree.add(p, c)
+			return self.tree.V[-1], self.tree.E[-1]
+		else: return None, None
 
 obstacles = [CircleObstacle(500,350,200), CircleObstacle(150,600,120)]
 rrt = RRT(1024, 768, 16, obstacles, Point(100, 100), Point(700, 700))
@@ -44,7 +46,8 @@ class App:
 		if p:
 			self.draw_dot(p.x,p.y,1)
 			self.canvas.create_line(e.l.x, e.l.y, e.r.x, e.r.y)
-		self.master.after(10, self.animate_search)
+		if len(rrt.tree.V) < 1000: 
+			self.master.after(10, self.animate_search)
 
 	def draw_tree(self, tree): 
 		for p in tree.V: 

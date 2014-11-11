@@ -75,13 +75,16 @@ class QuadNode(Node):
 		return self.quads[quad]
 
 	def addPoint(self, p, limit): 
-		print(self.rect)
 		if self.points and self.rect.area() > limit: 
 			self.split(limit)
 		if self.quads: 
-			quad = self.rect.quad(p)
 			self.getQuad(p).addPoint(p, limit)
 		self.points += [p]
+
+	def getQuads(self, p):
+		if self.quads: 
+			return self.getQuad(p).getQuads(p) + [self]
+		else: return [self]
 
 	def split(self, limit):
 		self.quads = [QuadNode(q) for q in self.rect.split()]
@@ -94,29 +97,32 @@ class QuadNode(Node):
 	def remove(self, p): 
 		self.points.remove(p)
 
+	def __str__(self):
+		return str(self.rect)
+	def __repr__(self): 
+		return self.__str__()
+
 	def samplePoint(self, limit, collision):
-		sample = None, None
+		sample, closest, quads = None, None, None
 		if self.rect.area() < limit or not self.points: 
 			s = self.rect.sample()
 			if not collision(s):
-				sample = s, None
+				sample, closest, quads = s, None, [self]
 		else: 
-			if len(self.points) == 1: 
+			if not self.quads and self.points: 
 				self.split(limit)
 			small = min(quad.samples for quad in self.quads)
 			mins = list(idx for (idx, quad) in enumerate(self.quads) if quad.samples == small)
 			quad = self.quads[random.choice(mins)]
-			sample = quad.samplePoint(limit, collision)
-			if sample[0] and not sample[1]:
-				val, closest = min((self.distance(sample[0], p), p) for p in self.points)
-				if collision(sample[0], closest): 
-					quad.remove(sample[0])
-					sample = None, None
-				else: sample = sample[0], closest
-		if sample[0]: 
-			self.points += [sample[0]]
+			sample, closest, quads = quad.samplePoint(limit, collision)
+			if sample:
+				quads += [self]
+				if not closest: 
+					val, closest = min((self.distance(sample, p), p) for p in self.points)
+					if collision(sample, closest): 
+						sample, closest, quads = None, None, None
 		self.samples += 1
-		return sample
+		return sample, closest, quads
 
 class QuadTree(Tree): 
 	def __init__(self, w, h, limit, obstacles, start, goal): 
@@ -130,6 +136,9 @@ class QuadTree(Tree):
 	def addPoint(self, p):
 		self.root.addPoint(p, self.limit)
 
+	def getQuads(self, p): 
+		return self.root.getQuads(p)
+
 	def collision(self, p, c=None): 
 		if c:
 			for obstacle in self.obstacles: 
@@ -142,9 +151,10 @@ class QuadTree(Tree):
 		return False
 
 	def samplePoint(self, towardsGoal=False): 
-		p, c = self.root.samplePoint(self.limit, lambda p, c=None: self.collision(p, c))
-		# if p: 
-		# 	print("add", p)
-		# 	self.addPoint(p)
-		# 	print("added", p)
-		return p, c
+		p, c, quads = self.root.samplePoint(self.limit, lambda p, c=None: self.collision(p, c))
+		if p: 
+			n = c + (p - c).norm() * 10
+			for quad in self.getQuads(n):
+				quad.points += [n]
+			return n, c
+		else: return None, None
