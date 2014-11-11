@@ -18,7 +18,7 @@ class RRT:
 		self.path = []
 		self.closest = float('inf')
 
-	def grow_baseline(self, step, goalApproximation = 0.1):
+	def grow_baseline(self, step, goalApproximation = 0.1, restraintLine):
 		p, c = self.qt.samplePoint(step)
 		#print(p,c)
 		if p and c:
@@ -36,7 +36,7 @@ class RRT:
 					print(dist)
 				if((p - self.goal).magnitude() < goalApproximation):
 					self.configTree.add(self.goal, c)
-					self.path = self.configTree(self.goal)
+					self.path = self.configTree.getPath(self.goal)
 					print(path)
 					self.pathFound = True
 				self.arm.setQ(p.to_tuple())
