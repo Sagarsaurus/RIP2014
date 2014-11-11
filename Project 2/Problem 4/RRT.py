@@ -13,12 +13,11 @@ class RRT:
 		self.arm = arm
 
 	def grow_baseline(self):
-		p, c = self.qt.samplePoint(0.1)
+		p, c = self.qt.samplePoint(0.02)
 		print(p,c)
 		if p and c:
-			print(p, c)
 			if not self.arm.ArmCollisionCheck(p.components, self.obstacles): 
-				self.qt.addPoint(n)
+				self.qt.addPoint(p)
 				new = self.arm.a3
 				self.arm.setQ(c.components)
 				old = self.arm.a3
@@ -29,7 +28,7 @@ class RRT:
 obstacles = [CircleObstacle(500,350,200), CircleObstacle(150,600,120)]
 obstacles = []
 space = (2*math.pi, 2*math.pi, 2*math.pi)
-rrt = RRT(space, 16, RobotArm((10, 10, 20)), obstacles, NPoint((0, 0, 0)), NPoint((3, 3, 3)))
+rrt = RRT(space, 16, RobotArm((200, 200, 400)), obstacles, NPoint((0, 0, 0)), NPoint((3, 3, 3)))
 
 class App:
 	def __init__(self, master, rrt, w, h):
@@ -57,8 +56,13 @@ class App:
 		if p:
 			self.draw_dot(p.components[0], p.components[1], 1)
 			self.canvas.create_line(e.l.components[0], e.l.components[1], e.r.components[0], e.r.components[1])
-		if len(rrt.tree.V) < 2000: 
-			self.master.after(1000, self.animate_search)
+			x = rrt.arm.a1.components[0], rrt.arm.a2.components[0], rrt.arm.a3.components[0]
+			y = rrt.arm.a1.components[1], rrt.arm.a2.components[1], rrt.arm.a3.components[1]
+			# self.canvas.create_line(0, 0, x[0], y[0])
+			# self.canvas.create_line(x[0], y[0], x[1], y[1])
+			# self.canvas.create_line(x[1], y[1], x[2], y[2])
+		if len(rrt.tree.V) < 10000: 
+			self.master.after(10, self.animate_search)
 
 	def draw_tree(self, tree): 
 		for p in tree.V: 

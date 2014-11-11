@@ -139,7 +139,7 @@ class QuadNode(Node):
 	def samplePoint(self, limit, collision):
 		sample, closest, quads = None, None, None
 		if self.rect.area() < limit or not self.points: 
-			s = self.rect.sample()
+			sample, closest, quads = self.rect.sample(), None, [self]
 			# if not collision(s):
 			# 	sample, closest, quads = s, None, [self]
 		else: 
@@ -187,7 +187,6 @@ class QuadTree():
 
 	def samplePoint(self, step): 
 		p, c, quads = self.root.samplePoint(self.limit, lambda p, c=None: self.collision(p, c))
-		print(p, c)
 		if p: 
 			if (p-c).magnitude() > step: 
 				n = c + (p - c).norm() * step

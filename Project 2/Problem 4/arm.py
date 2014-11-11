@@ -28,13 +28,9 @@ class RobotArm:
 
 	def setQ(self, q):
 		self.q  = q 
-		print(q)
 		self.a1 = VectorN( (self.l[0] * math.cos(q[0]), self.l[0] * math.sin(q[0]) ) )
-		print(self.a1)
 		self.a2 = self.a1 + VectorN(( self.l[1] * math.cos(q[0] + q[1]), self.l[1] * math.sin(q[0] + q[1])))
-		print(self.a2)
 		self.a3 = self.a2 + VectorN(( self.l[2] * math.cos(q[0] + q[1] + q[2]), self.l[2] * math.sin(q[0] + q[1] + q[2])))
-		print(self.a3)
 		self.link1 = Line(VectorN((0.0, 0.0)), self.a1)
 		self.link2 = Line(self.a1, self.a2)
 		self.link3 = Line(self.a2, self.a3)
