@@ -165,10 +165,8 @@ class QuadTree():
 		self.obstacles = obstacles
 		self.addPoint(start)
 		l = (20, 20, 10) 
-		self.start = RobotArm.inverseKinematics(start.to_tuple(), l)
-		self.goal = RobotArm.inverseKinematics(goal.to_tuple(), l)
-		self.arm = RobotArm(l , self.start)
-		print("a3",self.arm.a3)
+		self.start = start
+		self.goal = goal
 
 	def addPoint(self, p):
 		for quad in self.getQuads(p):
