@@ -134,7 +134,6 @@ class VectorN:
 class Line:
 
     def __init__(self, start, finish):
-        print("A",start, finish)
         self.start = start
         self.finish = finish
         self.move = finish - start
