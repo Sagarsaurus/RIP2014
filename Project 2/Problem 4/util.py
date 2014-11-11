@@ -16,54 +16,7 @@ def raycast(startPoint, direction, obstacles, limitedRay = False):
     allCollisions = sorted(allCollisions, key = lambda x: (startPoint - x[0]).magnitude())
     return allCollisions
 
-
-class Vector2:
-
-    def __init__(self, x, y):
-        self.x = float(x)
-        self.y = float(y)
-
-    def __add__(self, other):
-        return Vector2(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other):
-        return Vector2(self.x - other.x, self.y - other.y)
-
-    def __mul__(self, other):
-        return Vector2(self.x * other, self.y * other)
-
-    def __div__(self, other):
-        return Vector2(self.x / other, self.y / other)
-
-    def __eq__(self, other):
-        return (self.x == other.x) and (self.y == other.y)
-
-    def __str__(self):
-        return "x: " + str(self.x) + " y: " + str(self.y)
-
-    def __hash__(self):
-        return  hash(self.to_tuple())
-
-    def dot(self, other):
-        return self.x * other.x + self.y * other.y
-
-    def cross(self, other):
-        return self.x * other.y - self.y * other.x
-
-    def magnitude(self):
-        return math.sqrt(self.x ** 2 + self.y ** 2)
-
-    def norm(self):
-        return self / self.magnitude()
-
-    def angle(self):
-        return math.atan2(self.y, self.x)
-
-    def to_tuple(self):
-        return int(self.x), int(self.y)
-
 class VectorN:
-
     def __init__(self, components):
         self.components = [float(x) for x in components]
         self.n = len(components)
@@ -113,6 +66,9 @@ class VectorN:
     def __hash__(self):
         return  hash(self.to_tuple())
 
+    def __getitem__(self,index):
+        return self.components[index]
+
     def dot(self, other):
         if self.n == other.n:
             comp = [0 for x in self.components]
@@ -130,6 +86,59 @@ class VectorN:
 
     def norm(self):
         return self / self.magnitude()
+
+    def round(self, precision): 
+        return VectorN(tuple(round(x, precision) for x in self.components))
+
+class Vector2:
+
+    def __init__(self, x, y):
+        self.x = float(x)
+        self.y = float(y)
+        self.n = 2
+        self.components = (self.x, self.y)
+
+    def __add__(self, other):
+        return Vector2(self.x + other.x, self.y + other.y)
+
+    def __getitem__(self,index):
+        return self.components[index]
+
+    def __sub__(self, other):
+        return Vector2(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, other):
+        return Vector2(self.x * other, self.y * other)
+
+    def __div__(self, other):
+        return Vector2(self.x / other, self.y / other)
+
+    def __eq__(self, other):
+        return (self.x == other.x) and (self.y == other.y)
+
+    def __str__(self):
+        return "x: " + str(self.x) + " y: " + str(self.y)
+
+    def __hash__(self):
+        return  hash(self.to_tuple())
+
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y
+
+    def cross(self, other):
+        return self.x * other.y - self.y * other.x
+
+    def magnitude(self):
+        return math.sqrt(self.x ** 2 + self.y ** 2)
+
+    def norm(self):
+        return self / self.magnitude()
+
+    def angle(self):
+        return math.atan2(self.y, self.x)
+
+    def to_tuple(self):
+        return int(self.x), int(self.y)
 
 class Line:
 

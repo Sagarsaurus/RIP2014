@@ -8,34 +8,6 @@ from arm import *
 def prod(iterable):
     return reduce(operator.mul, iterable, 1)
 
-# class Rect:
-# 	def __init__(self, x, y, w, h):
-# 		self.x = x
-# 		self.y = y
-# 		self.w = w
-# 		self.h = h
-
-# 	def area(self): 
-# 		return self.w * self.h
-
-# 	def split(self): 
-# 		return [	Rect(self.x, self.y, self.w / 2, self.h / 2), 
-# 					Rect(self.x + self.w / 2, self.y, self.w / 2, self.h / 2), 
-# 					Rect(self.x, self.y + self.h / 2, self.w / 2, self.h / 2), 
-# 					Rect(self.x + self.w / 2, self.y + self.h / 2, self.w / 2, self.h / 2) ]
-
-# 	def quad(self, p): 
-# 		return (p.x >= self.x + self.w / 2) + (p.y >= self.y + self.h / 2) * 2
-
-# 	def sample(self):
-# 		return Point(self.x + self.w * random.random(), self.y + self.h * random.random())
-
-# 	def __str__(self):
-# 		return "(" +  "{:.1f}".format(self.x) + ", " + "{:.1f}".format(self.y) + ", " + "{:.1f}".format(self.w) + ", " + "{:.1f}".format(self.h) + ")"
-
-# 	def __repr__(self): 
-# 		return self.__str__()
-
 class NRect: 
 	def __init__(self, pos, size): 
 		self.pos = pos
@@ -58,7 +30,7 @@ class NRect:
 		return self.__str__()
 
 	def sample(self):
-		return NPoint(tuple(x + s * random.random() for x, s in zip(self.pos, self.size)))
+		return VectorN(tuple(x + s * random.random() for x, s in zip(self.pos, self.size)))
 
 	def quad(self, point): 
 		coord = tuple(p >= x + s / 2 for p, x, s in zip(point.components, self.pos, self.size))
@@ -66,7 +38,7 @@ class NRect:
 		return quad
 
 class Node: 
-	def __init__(self, value, parent):
+	def __init__(self, value, parent=None):
 		self.value = value
 		self.parent = parent
 	def __str__(self):
@@ -84,39 +56,29 @@ class Edge:
 		return self.__str__()
 
 class Tree: 
-	def __init__(self, r):
-		rNode = Node(r, None)
+	def __init__(self, r, precision):
+		r = r.round(precision)
+		self.precision = precision
+		rNode = Node(r)
 		self.V = [rNode]
 		self.E = []
 		self.dict = {r : rNode}
 	def add(self, n, p):
-		print(self.dict, p)
+		n = n.round(self.precision)
+		p = p.round(self.precision)
 		pNode = self.dict[p]
 		nNode = Node(n, pNode)
 		self.V += [pNode]
 		self.E += [Edge(pNode,nNode)]
 		self.dict[n] = nNode
 	def pathToStart(self, n):
+		n = n.round(self.precision)
 		currentNode = self.dict[n]
 		path = []
 		while currentNode is not None:
 			path = [currentNode.value] + path
 			currentNode = currentNode.parent
 		return path
-
-# class Point(Node, Vector2): 
-# 	def __init__(self, x, y): 
-# 		self.x = x
-# 		self.y = y
-
-class NPoint(VectorN, Node): 
-	def __init__(self, pos): 
-		super().__init__(pos)
-
-# r = NRect((32, 32 ,32), (16,16,16))
-# print(r)
-# print(r.split())
-# print(r.quad(NPoint( (41,38,41) )))
 
 class QuadNode(Node): 
 	def __init__(self, rect): 
