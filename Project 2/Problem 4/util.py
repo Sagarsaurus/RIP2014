@@ -8,8 +8,8 @@ def inRange(a, b, c, inclusive = False):
 
 def raycast(startPoint, direction, obstacles, limitedRay = False):
     allCollisions = []
-    if limitedRay:
-        allCollisions.append((startPoint + direction, None))
+    # if limitedRay:
+    #     allCollisions.append((startPoint + direction, None))
     for obstacle in obstacles:
         pointsHit = obstacle.raycast(startPoint, direction, limitedRay)
         allCollisions += [(x, obstacle) for x in pointsHit]

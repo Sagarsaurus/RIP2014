@@ -3,37 +3,38 @@ from util import *
 from functools import reduce
 import itertools
 import operator
+from arm import *
 
 def prod(iterable):
     return reduce(operator.mul, iterable, 1)
 
-class Rect:
-	def __init__(self, x, y, w, h):
-		self.x = x
-		self.y = y
-		self.w = w
-		self.h = h
+# class Rect:
+# 	def __init__(self, x, y, w, h):
+# 		self.x = x
+# 		self.y = y
+# 		self.w = w
+# 		self.h = h
 
-	def area(self): 
-		return self.w * self.h
+# 	def area(self): 
+# 		return self.w * self.h
 
-	def split(self): 
-		return [	Rect(self.x, self.y, self.w / 2, self.h / 2), 
-					Rect(self.x + self.w / 2, self.y, self.w / 2, self.h / 2), 
-					Rect(self.x, self.y + self.h / 2, self.w / 2, self.h / 2), 
-					Rect(self.x + self.w / 2, self.y + self.h / 2, self.w / 2, self.h / 2) ]
+# 	def split(self): 
+# 		return [	Rect(self.x, self.y, self.w / 2, self.h / 2), 
+# 					Rect(self.x + self.w / 2, self.y, self.w / 2, self.h / 2), 
+# 					Rect(self.x, self.y + self.h / 2, self.w / 2, self.h / 2), 
+# 					Rect(self.x + self.w / 2, self.y + self.h / 2, self.w / 2, self.h / 2) ]
 
-	def quad(self, p): 
-		return (p.x >= self.x + self.w / 2) + (p.y >= self.y + self.h / 2) * 2
+# 	def quad(self, p): 
+# 		return (p.x >= self.x + self.w / 2) + (p.y >= self.y + self.h / 2) * 2
 
-	def sample(self):
-		return Point(self.x + self.w * random.random(), self.y + self.h * random.random())
+# 	def sample(self):
+# 		return Point(self.x + self.w * random.random(), self.y + self.h * random.random())
 
-	def __str__(self):
-		return "(" +  "{:.1f}".format(self.x) + ", " + "{:.1f}".format(self.y) + ", " + "{:.1f}".format(self.w) + ", " + "{:.1f}".format(self.h) + ")"
+# 	def __str__(self):
+# 		return "(" +  "{:.1f}".format(self.x) + ", " + "{:.1f}".format(self.y) + ", " + "{:.1f}".format(self.w) + ", " + "{:.1f}".format(self.h) + ")"
 
-	def __repr__(self): 
-		return self.__str__()
+# 	def __repr__(self): 
+# 		return self.__str__()
 
 class NRect: 
 	def __init__(self, pos, size): 
@@ -94,10 +95,10 @@ class NPoint(VectorN, Node):
 	def __init__(self, pos): 
 		super().__init__(pos)
 
-r = NRect((32, 32 ,32), (16,16,16))
-print(r)
-print(r.split())
-print(r.quad(NPoint( (41,38,41) )))
+# r = NRect((32, 32 ,32), (16,16,16))
+# print(r)
+# print(r.split())
+# print(r.quad(NPoint( (41,38,41) )))
 
 class QuadNode(Node): 
 	def __init__(self, rect): 
@@ -139,8 +140,8 @@ class QuadNode(Node):
 		sample, closest, quads = None, None, None
 		if self.rect.area() < limit or not self.points: 
 			s = self.rect.sample()
-			if not collision(s):
-				sample, closest, quads = s, None, [self]
+			# if not collision(s):
+			# 	sample, closest, quads = s, None, [self]
 		else: 
 			if not self.quads and self.points: 
 				self.split(limit)
@@ -152,22 +153,24 @@ class QuadNode(Node):
 				quads += [self]
 				if not closest: 
 					val, closest = min(((sample - p).magnitude(), p) for p in self.points)
-					if collision(sample, closest): 
-						sample, closest, quads = None, None, None
+					# if collision(sample, closest): 
+					# 	sample, closest, quads = None, None, None
 		self.samples += 1
 		return sample, closest, quads
 
-class QuadTree(Tree): 
-	def __init__(self, w, h, limit, obstacles, start, goal): 
-		self.root = QuadNode(NRect( (0, 0) , (w, h) ))
+class QuadTree(): 
+	def __init__(self, space, limit, obstacles, start, goal): 
+		self.root = QuadNode(NRect( (0,)*len(space) , space ))
 		self.limit = limit
 		self.obstacles = obstacles
 		self.addPoint(start)
 		self.start = start
 		self.goal = goal
+		self.arm = RobotArm((10, 10, 20) , (1,1,1))
 
 	def addPoint(self, p):
-		self.root.addPoint(p, self.limit)
+		for quad in self.getQuads(p):
+			quad.points += [p]
 
 	def getQuads(self, p): 
 		return self.root.getQuads(p)
@@ -189,7 +192,10 @@ class QuadTree(Tree):
 			if (p-c).magnitude() > 10: 
 				n = c + (p - c).norm() * 10
 			else: n = p
-			for quad in self.getQuads(n):
-				quad.points += [n]
-			return n, c
-		else: return None, None
+			if not self.arm.ArmCollisionCheck(n.components, self.obstacles): 
+				self.addPoint(n)
+				new = self.arm.a3
+				self.arm.setQ(c.components)
+				old = self.arm.a3
+				return new, old
+		return None, None

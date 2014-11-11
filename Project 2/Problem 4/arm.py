@@ -1,5 +1,5 @@
 import math
-import util
+from util import *
 
 class RobotArm:
 
@@ -28,18 +28,22 @@ class RobotArm:
 
 	def setQ(self, q):
 		self.q  = q 
-		self.a1 = Vector( self.l[0] * math.cos(q[0]), self.l[0] * math.sin(q[0]))
-		self.a2 = a1 + Vector( self.l[1] * math.cos(q[0] + q[1]), self.l[1] * math.sin(q[0] + q[1]))
-		self.a3 = a2 + Vector( self.l[2] * math.cos(q[0] + q[1] + q[2]), self.l[2] * math.sin(q[0] + q[1] + q[2]))
-		self.link1 = Line(Vector(0.0, 0.0), a1)
-		self.link2 = Line(a1, a2)
-		self.link3 = Line(a2, a3)
+		print(q)
+		self.a1 = VectorN( (self.l[0] * math.cos(q[0]), self.l[0] * math.sin(q[0]) ) )
+		print(self.a1)
+		self.a2 = self.a1 + VectorN(( self.l[1] * math.cos(q[0] + q[1]), self.l[1] * math.sin(q[0] + q[1])))
+		print(self.a2)
+		self.a3 = self.a2 + VectorN(( self.l[2] * math.cos(q[0] + q[1] + q[2]), self.l[2] * math.sin(q[0] + q[1] + q[2])))
+		print(self.a3)
+		self.link1 = Line(VectorN((0.0, 0.0)), self.a1)
+		self.link2 = Line(self.a1, self.a2)
+		self.link3 = Line(self.a2, self.a3)
 
-	def inverseKinematics(self, x):
-		X2 = x(1) - self.l(3) * math.cos(x(3));      																		#X2 = X - L3cos(theta)
-	    Y2 = x(2) - self.l(3) * math.sin(x(3));           																	#Y2 = Y - L3cos(theta)
-	    det = X2**2 + Y2**2;                      																			#det = X2 ^ 2 + Y2 ^ 2
-	    Q1 = math.acos(X2/sqrt(det)) + math.acos((self.l(1)**2 - self.l(2)**2 + det) / (2 * self.l(1) * math.sqrt(det)));  	#Law of Cosines
-	    Q2 = pi + math.acos((self.l(1)**2 + self.l(2)**2 - det)/(2 * self.l(1) * self.l(2)));								#Law of Cosines
-	    Q3 = x(3) - Q1 - Q2;                  														 						#theta3 = theta - theta1 - theta2
-	    return [Q1, Q2, Q3];      			  																				#CaLcuLate q_i from X
+	# def inverseKinematics(self, x):
+	# 	X2 = x(1) - self.l(3) * math.cos(x(3))      																		#X2 = X - L3cos(theta)
+	#     Y2 = x(2) - self.l(3) * math.sin(x(3))           																	#Y2 = Y - L3cos(theta)
+	#     det = X2**2 + Y2**2                      																			#det = X2 ^ 2 + Y2 ^ 2
+	#     Q1 = math.acos(X2/sqrt(det)) + math.acos((self.l(1)**2 - self.l(2)**2 + det) / (2 * self.l(1) * math.sqrt(det)));  	#Law of Cosines
+	#     Q2 = pi + math.acos((self.l(1)**2 + self.l(2)**2 - det)/(2 * self.l(1) * self.l(2)));								#Law of Cosines
+	#     Q3 = x(3) - Q1 - Q2;                  														 						#theta3 = theta - theta1 - theta2
+	#     return [Q1, Q2, Q3];      			  																				#CaLcuLate q_i from X
