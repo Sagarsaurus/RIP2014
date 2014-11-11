@@ -164,9 +164,11 @@ class QuadTree():
 		self.limit = limit
 		self.obstacles = obstacles
 		self.addPoint(start)
-		self.start = start
-		self.goal = goal
-		self.arm = RobotArm((10, 10, 20) , (1,1,1))
+		l = (20, 20, 10) 
+		self.start = RobotArm.inverseKinematics(start.to_tuple(), l)
+		self.goal = RobotArm.inverseKinematics(goal.to_tuple(), l)
+		self.arm = RobotArm(l , self.start)
+		print("a3",self.arm.a3)
 
 	def addPoint(self, p):
 		for quad in self.getQuads(p):
@@ -191,11 +193,12 @@ class QuadTree():
 		if p: 
 			if (p-c).magnitude() > 10: 
 				n = c + (p - c).norm() * 10
-			else: n = p
-			if not self.arm.ArmCollisionCheck(n.components, self.obstacles): 
-				self.addPoint(n)
-				new = self.arm.a3
-				self.arm.setQ(c.components)
-				old = self.arm.a3
-				return new, old
+			else: 
+				n = p
+				if not self.arm.ArmCollisionCheck(n.components, self.obstacles): 
+					self.addPoint(n)
+					new = self.arm.a3
+					self.arm.setQ(c.components)
+					old = self.arm.a3
+					return new, old
 		return None, None

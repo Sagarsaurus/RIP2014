@@ -21,7 +21,7 @@ class RRT:
 obstacles = [CircleObstacle(500,350,200), CircleObstacle(150,600,120)]
 obstacles = []
 space = (2*math.pi, 2*math.pi, 2*math.pi)
-rrt = RRT(space, 16, obstacles, NPoint((0, 0, 0)), NPoint((3, 3, 3)))
+rrt = RRT(space, 16, obstacles, NPoint((10, 10, 1)), NPoint((3, 3, 3)))
 
 class App:
 	def __init__(self, master, rrt, w, h):
