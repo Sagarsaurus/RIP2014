@@ -389,13 +389,13 @@ class CircleObstacle(Obstacle):
         disc = b ** 2 - 4*a*c
 
         if a <= 0 or disc < 0:
-            return None
+            return []
         elif disc == 0:
             t = -b / (2 * b)
             if t >= 0 and (not limitedRay or t <= 1):
                 return [E + d *t]
             else:
-                return None
+                return []
         else:
             t1 = (-b + math.sqrt(disc)) / (2 * a)
             t2 = (-b - math.sqrt(disc)) / (2 * a)
