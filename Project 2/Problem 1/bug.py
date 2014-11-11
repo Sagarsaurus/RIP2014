@@ -1,5 +1,5 @@
 from util import *
-import pygame
+import tkinter as tk
 import math
 
 
@@ -45,125 +45,100 @@ class BugAlgorithm:
             bugPos += currentDirection / 1000 #inch the bug off of the obstacle to avoid raycasting into the obstacle again
             currentDirection = (self.goal - bugPos)
 
+xOffset = 500
+yOffset = 300
+yMax = 700
 
-def main():
+class App:
+    def __init__(self, master, bug, domain, w, h):
+        self.w = w
+        self.h = h
+        self.master = master
+        frame = tk.Frame(master)
+        frame.pack()
+        self.canvas = tk.Canvas(master, width=w, height=h)
+        self.canvas.pack()
 
+        bug_x = [0,0  , 40, 40,5  ,5  ,35 ,35 ,5  ,5 ,35,35,5 ,5 ,35,35 ,5,5 ,35,35,5 ,5,75,75,20,20,75,75,20,20,75,75,20,20 ,75 ,75 ,20 ,20 ,80 ,80]
+        bug_y = [0,147,147,140,140,119,119,112,112,91,91,84,84,63,63,56,56,35,35,28,28,7,7 ,42,42,49,49,70,70,77,77,98,98,105,105,126,126,133,133,0 ]
+        bug_points = []
+        for i in zip(bug_x, bug_y):
+            bug_points += [Vector2(i[0], i[1])]
 
-    # Define some colors
-    GREEN = (0, 255, 0)
-    RED = (255, 0, 0)
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
+        #Initialize
+        start_position = Vector2(10, 60)
+        goal_position = Vector2(210, 75)
+        obstacles = [ CircleObstacle(50, 60, 20), CircleObstacle(150, 75, 35) ]
+        angle_change = 45
 
-    bug_x = [0,0  , 40, 40,5  ,5  ,35 ,35 ,5  ,5 ,35,35,5 ,5 ,35,35 ,5,5 ,35,35,5 ,5,75,75,20,20,75,75,20,20,75,75,20,20 ,75 ,75 ,20 ,20 ,80 ,80]
-    bug_y = [0,147,147,140,140,119,119,112,112,91,91,84,84,63,63,56,56,35,35,28,28,7,7 ,42,42,49,49,70,70,77,77,98,98,105,105,126,126,133,133,0 ]
-    bug_points = []
-    for i in zip(bug_x, bug_y):
-        bug_points += [Vector2(i[0], i[1])]
+        domain1 = BugAlgorithm(start_position, goal_position, obstacles, angle_change)
 
-    #Initialize
-    start_position = Vector2(10, 60)
-    goal_position = Vector2(210, 75)
-    obstacles = [ CircleObstacle(50, 60, 20), CircleObstacle(150, 75, 35) ]
-    angle_change = 45
+        start_position = Vector2(25,157)
+        goal_position = Vector2(25,17)
+        obstacles = [ PolygonObstacle(bug_points) ]
+        angle_change = 45
 
-    domain1 = BugAlgorithm(start_position, goal_position, obstacles, angle_change)
+        domain2 = BugAlgorithm(start_position, goal_position, obstacles, angle_change)
 
-    start_position = Vector2(25,157)
-    goal_position = Vector2(25,17)
-    obstacles = [ PolygonObstacle(bug_points) ]
-    angle_change = 45
+        bugAlg = domain1 if domain == 1 else domain2
 
-    domain2 = BugAlgorithm(start_position, goal_position, obstacles, angle_change)
+        # Run bug 
+        bugAlg.run(bug)
+        print("hi")
 
-    bug = domain2
+        bugPath = []
+        for i in range(0, len(bugAlg.path) - 1):
+            v1 = bugAlg.path[i]
+            v2 = bugAlg.path[i + 1]
+            mag = (v2 - v1).magnitude()
+            norm = (v2 - v1).norm()
+            bugPath.append(v1)
+            i = 1
+            while i < mag:
+                bugPath.append(v1 + norm * i)
+                i += 1
+            bugPath.append(v2)
 
-    max_y = 200
-    offset_x = 100
+        self.path_to_tuples = []
 
-    pygame.init()
+        for v in bugPath:
+            print(v)
+            tupleV = v.to_tuple()
+            tupleV = (xOffset + tupleV[0], yMax - (yOffset + tupleV[1]))
+            self.path_to_tuples.append(tupleV)
 
-    # Set the width and height of the screen [width, height]
-    size = (640, 480)
-    screen = pygame.display.set_mode(size)
+        for obstacle in bugAlg.obstacles: 
+            self.draw_obstacle(obstacle)
+        self.p = 1
+        self.canvas.create_line(xOffset, 0, xOffset, w)
+        self.canvas.create_line(0, yMax - yOffset, 1000, yMax - yOffset)
+        self.master.after(1000, self.animate_movement)
+        self.line = None
 
-    pygame.display.set_caption("Bug")
+    def animate_movement(self):
+        self.canvas.delete(self.line)
 
-    # Loop until the user clicks the close button.
-    done = False
+        if self.p > len(self.path_to_tuples):
+            self.p = 1
 
-    # Used to manage how fast the screen updates
-    clock = pygame.time.Clock()
+        self.p += 1
 
-    # Run bug 
-    bug.run(bug = 2)
+        drawn_path = self.path_to_tuples[0 : self.p]
+        self.line = self.canvas.create_line(drawn_path, fill='green') 
+        self.canvas.after(10, self.animate_movement)
 
-    path_to_tuples = []
+    def draw_obstacle(self, obstacle):
+        print("HI")
+        if isinstance(obstacle, CircleObstacle):
+            print("BYE")
+            r = obstacle.r
+            self.canvas.create_oval(obstacle.x-r + xOffset, yMax - (obstacle.y-r + yOffset), obstacle.x+r + xOffset, yMax -(obstacle.y+r + yOffset))
+        elif isinstance(obstacle, PolygonObstacle):
+            points = [Vector2(xOffset + x.y, yMax - (yOffset + x.y)).to_tuple() for x in obstacle.points]
+            self.canvas.create_polygon(points);
+        elif isinstance(obstacle, RectangleObstacle):
+            self.draw_obstacle(obstacle.wrapped)
 
-    for v in bug.path:
-        print v
-        tupleV = v.to_tuple()
-        tupleV = (offset_x + tupleV[0], max_y - tupleV[1])
-        path_to_tuples.append(tupleV)
-
-    # -------- Main Program Loop -----------
-    while not done:
-        # --- Main event loop
-        for event in pygame.event.get(): # User did something
-            if event.type == pygame.QUIT: # If user clicked close
-                done = True # Flag that we are done so we exit this loop
-
-        # --- Game logic should go here
-
-
-        # --- Drawing code should go here
-
-        # First, clear the screen to white. Don't put other drawing commands
-        # above this, or they will be erased with this command.
-        screen.fill(WHITE)
-
-        # print bug1.bugPosition.to_tuple()
-        # Drawing other objects
-
-        # Draw obstacles if they exist
-
-        # Draw path for bug
-        #for position in path_to_tuples:
-           #pygame.draw.circle(screen, GREEN, position, 1, 0)
-
-        # Draw obstacles
-        if bug.obstacles:
-            for obstacle in bug.obstacles:
-                if isinstance(obstacle, PolygonObstacle):
-                    vert = obstacle.points
-                    tupVert = []
-                    for vertex in vert:
-                        tup = vertex.to_tuple()
-                        tupVert += [(offset_x + tup[0], max_y - tup[1])]
-                    pygame.draw.polygon(screen, BLACK, tupVert)
-                elif isinstance(obstacle, CircleObstacle):
-                    pygame.draw.circle(screen, BLACK, obstacle.get_position(), obstacle.get_radius(), 0)
-
-        
-        pygame.draw.lines(screen, GREEN, False, path_to_tuples)
-
-        # pygame.draw.circle(screen, GREEN, bug1.bugPosition.to_tuple(), 10, 0)
-
-
-        # Draw goal for bug
-        # pygame.draw.circle(screen, RED, bug1.goalPosition.to_tuple(), 10, 0)
-
-        # --- Go ahead and update the screen with what we've drawn.
-        pygame.display.flip()
-
-        # --- Limit to 60 frames per second
-        clock.tick(60)
-
-    # Close the window and quit.
-    # If you forget this line, the program will 'hang'
-    # on exit if running from IDLE.
-    pygame.quit()
-
-
-if __name__ == "__main__":
-    main()
+root = tk.Tk()
+app = App(root, 1, 2, 1024, 768)
+root.mainloop()
