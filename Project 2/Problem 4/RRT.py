@@ -6,16 +6,21 @@ import math
 class RRT:
 	def __init__(self, space, limit, arm, obstacles, start, goal): 
 		self.space = space
-		self.start = RobotArm.inverseKinematics(start.to_tuple(), arm.l)
-		self.goal = RobotArm.inverseKinematics(goal.to_tuple(), arm.l)
+		self.start = NPoint(RobotArm.inverseKinematics(start.to_tuple(), arm.l))
+		self.goal = NPoint(RobotArm.inverseKinematics(goal.to_tuple(), arm.l))
+		print(self.start, self.goal)
 		self.obstacles = obstacles
-		self.qt = QuadTree(space, limit, obstacles, NPoint(self.start), NPoint(self.goal))
-		self.tree = Tree(start)
+		self.qt = QuadTree(space, limit, obstacles, self.start, self.goal)
+		self.worldTree = Tree(start)
+		self.configTree =  Tree(self.start)
 		self.arm = arm
+		self.pathFound = False
+		self.path = []
+		self.closest = float('inf')
 
-	def grow_baseline(self, step):
+	def grow_baseline(self, step, goalApproximation = 0.1):
 		p, c = self.qt.samplePoint(step)
-		print(p,c)
+		#print(p,c)
 		if p and c:
 			if not self.arm.ArmCollisionCheck(p.components, self.obstacles): 
 				self.qt.addPoint(p)
@@ -23,9 +28,19 @@ class RRT:
 				# print(self.arm.a3)
 				self.arm.setQ(c.components)
 				old = self.arm.a3
-				self.tree.add(new, old)
+				self.worldTree.add(new, old)
+				self.configTree.add(p, c)
+				dist = (p - self.goal).magnitude()
+				if dist < self.closest:
+					self.closest = dist
+					print(dist)
+				if((p - self.goal).magnitude() < goalApproximation):
+					self.configTree.add(self.goal, c)
+					self.path = self.configTree(self.goal)
+					print(path)
+					self.pathFound = True
 				self.arm.setQ(p.to_tuple())
-				return self.tree.V[-1], self.tree.E[-1]
+				return self.worldTree.V[-1], self.worldTree.E[-1]
 		return None, None
 
 obstacles = [CircleObstacle(200,225,100)]#, CircleObstacle(150,600,120)]
@@ -72,7 +87,7 @@ class App:
 
 	def animate_search(self): 
 		p, e = rrt.grow_baseline(0.2)
-		print(p)
+		#print(p)
 		if p:
 			self.draw_dot(p.x, p.y, 1)
 			self.draw_line(e.l, e.r)
@@ -83,12 +98,30 @@ class App:
 			self.armlines[0] = self.canvas.create_line(xOffset, yOffset, x[0], y[0], fill="blue")
 			self.armlines[1] = self.canvas.create_line(x[0], y[0], x[1], y[1], fill="blue")
 			self.armlines[2] = self.canvas.create_line(x[1], y[1], x[2], y[2], fill="blue")
-		if len(rrt.tree.V) < 500: 
+
+			rrt.arm.setQ(rrt.start.to_tuple())
+
+			x = rrt.arm.a1.x + xOffset, rrt.arm.a2.x + xOffset, rrt.arm.a3.x + xOffset
+			y = rrt.arm.a1.y + yOffset, rrt.arm.a2.y + yOffset, rrt.arm.a3.y + yOffset
+
+			self.armlines[3] = self.canvas.create_line(xOffset, yOffset, x[0], y[0], fill="green")
+			self.armlines[4] = self.canvas.create_line(x[0], y[0], x[1], y[1], fill="green")
+			self.armlines[5] = self.canvas.create_line(x[1], y[1], x[2], y[2], fill="green")
+
+			rrt.arm.setQ(rrt.goal.to_tuple())
+
+			x = rrt.arm.a1.x + xOffset, rrt.arm.a2.x + xOffset, rrt.arm.a3.x + xOffset
+			y = rrt.arm.a1.y + yOffset, rrt.arm.a2.y + yOffset, rrt.arm.a3.y + yOffset
+
+			self.armlines[6] = self.canvas.create_line(xOffset, yOffset, x[0], y[0], fill="red")
+			self.armlines[7] = self.canvas.create_line(x[0], y[0], x[1], y[1], fill="red")
+			self.armlines[8] = self.canvas.create_line(x[1], y[1], x[2], y[2], fill="red")
+		if len(rrt.worldTree.V) < 5000: 
 			self.master.after(10, self.animate_search)
 
 	def draw_tree(self, tree): 
 		for p in tree.V: 
-			pass#self.draw_dot(p.x,p.y,1) 
+			self.draw_dot(p.x,p.y,1) 
 		for e in tree.E: 
 			self.canvas.create_line(e.l.x + xOffset, yMax - (e.l.y + yOffset), e.r.x + xOffset, yMax - (e.r.y + yOffset))
 

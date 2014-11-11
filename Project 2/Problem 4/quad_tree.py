@@ -66,8 +66,13 @@ class NRect:
 		return quad
 
 class Node: 
-	def __init__(self): 
-		pass
+	def __init__(self, value, parent):
+		self.value = value
+		self.parent = parent
+	def __str__(self):
+		return str(self.value)
+	def __repr__(self): 
+		return self.__str__()
 
 class Edge:
 	def __init__(self, l, r): 
@@ -80,11 +85,24 @@ class Edge:
 
 class Tree: 
 	def __init__(self, r):
-		self.V = [r]
+		rNode = Node(r, None)
+		self.V = [rNode]
 		self.E = []
+		self.dict = {r : rNode}
 	def add(self, n, p):
-		self.V += [n]
-		self.E += [Edge(p,n)]
+		print(self.dict, p)
+		pNode = self.dict[p]
+		nNode = Node(n, pNode)
+		self.V += [pNode]
+		self.E += [Edge(pNode,nNode)]
+		self.dict[n] = nNode
+	def pathToStart(self, n):
+		currentNode = self.dict[n]
+		path = []
+		while currentNode is not None:
+			path = [currentNode.value] + path
+			currentNode = currentNode.parent
+		return path
 
 # class Point(Node, Vector2): 
 # 	def __init__(self, x, y): 
@@ -164,9 +182,9 @@ class QuadTree():
 		self.limit = limit
 		self.obstacles = obstacles
 		self.addPoint(start)
-		l = (20, 20, 10) 
 		self.start = start
 		self.goal = goal
+		self.path = []
 
 	def addPoint(self, p):
 		for quad in self.getQuads(p):
