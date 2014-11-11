@@ -38,6 +38,9 @@ class Vector2:
     def __div__(self, other):
         return Vector2(self.x / other, self.y / other)
 
+    def __truediv__(self, other):
+        return self.__div__(other)
+
     def __eq__(self, other):
         return (self.x == other.x) and (self.y == other.y)
 

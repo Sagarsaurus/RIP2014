@@ -67,7 +67,7 @@ class App:
 		self.master.after(1000, self.animate_search)
 		self.canvas.create_line(xOffset, 0, xOffset, w)
 		self.canvas.create_line(0, yOffset, 1000, yOffset)
-		self.armlines = [None]*3
+		self.armlines = [None]*7
 
 	def draw_dot(self, x, y, r): 
 		self.canvas.create_oval(x-r + xOffset, y-r + yOffset, x+r + xOffset, y + r + yOffset)
