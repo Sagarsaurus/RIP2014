@@ -29,13 +29,13 @@ class RobotArm:
 	def setQ(self, q):
 		self.q  = q 
 		#print(q)
-		self.a1 = VectorN( (self.l[0] * math.cos(q[0]), self.l[0] * math.sin(q[0]) ) )
+		self.a1 = Vector2(self.l[0] * math.cos(q[0]), self.l[0] * math.sin(q[0]) )
 		#print("a1", self.a1)
-		self.a2 = self.a1 + VectorN(( self.l[1] * math.cos(q[0] + q[1]), self.l[1] * math.sin(q[0] + q[1])))
+		self.a2 = self.a1 + Vector2( self.l[1] * math.cos(q[0] + q[1]), self.l[1] * math.sin(q[0] + q[1]))
 		#print("a2", self.a2)
-		self.a3 = self.a2 + VectorN(( self.l[2] * math.cos(q[0] + q[1] + q[2]), self.l[2] * math.sin(q[0] + q[1] + q[2])))
+		self.a3 = self.a2 + Vector2( self.l[2] * math.cos(q[0] + q[1] + q[2]), self.l[2] * math.sin(q[0] + q[1] + q[2]))
 		#print("a3", self.a3)
-		self.link1 = Line(VectorN((0.0, 0.0)), self.a1)
+		self.link1 = Line(Vector2(0.0, 0.0), self.a1)
 		self.link2 = Line(self.a1, self.a2)
 		self.link3 = Line(self.a2, self.a3)
 
@@ -43,9 +43,8 @@ class RobotArm:
 		X2 = x[0] - l[2] * math.cos(x[2])
 		Y2 = x[1] - l[2] * math.sin(x[2])
 		det = X2**2 + Y2**2
-		print("HI", X2 / math.sqrt(det), (l[0]**2 - l[1]**2 + det) / (2 * l[0] * math.sqrt(det)) )
+		print("HI", X2, Y2, X2 / math.sqrt(det), (l[0]**2 - l[1]**2 + det) / (2 * l[0] * math.sqrt(det)) )
 		Q1 = math.acos(X2 / math.sqrt(det)) + math.acos((l[0]**2 - l[1]**2 + det) / (2 * l[0] * math.sqrt(det)))
 		Q2 = math.pi + math.acos((l[0]**2 + l[1]**2 - det)/(2 * l[0] * l[1]))
 		Q3 = x[2] - Q1 - Q2
-		print(Q1, Q2, Q3)
 		return [Q1, Q2, Q3]

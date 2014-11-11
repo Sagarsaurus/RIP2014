@@ -16,6 +16,52 @@ def raycast(startPoint, direction, obstacles, limitedRay = False):
     allCollisions = sorted(allCollisions, key = lambda x: (startPoint - x[0]).magnitude())
     return allCollisions
 
+
+class Vector2:
+
+    def __init__(self, x, y):
+        self.x = float(x)
+        self.y = float(y)
+
+    def __add__(self, other):
+        return Vector2(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return Vector2(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, other):
+        return Vector2(self.x * other, self.y * other)
+
+    def __div__(self, other):
+        return Vector2(self.x / other, self.y / other)
+
+    def __eq__(self, other):
+        return (self.x == other.x) and (self.y == other.y)
+
+    def __str__(self):
+        return "x: " + str(self.x) + " y: " + str(self.y)
+
+    def __hash__(self):
+        return  hash(self.to_tuple())
+
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y
+
+    def cross(self, other):
+        return self.x * other.y - self.y * other.x
+
+    def magnitude(self):
+        return math.sqrt(self.x ** 2 + self.y ** 2)
+
+    def norm(self):
+        return self / self.magnitude()
+
+    def angle(self):
+        return math.atan2(self.y, self.x)
+
+    def to_tuple(self):
+        return int(self.x), int(self.y)
+
 class VectorN:
 
     def __init__(self, components):
@@ -88,6 +134,7 @@ class VectorN:
 class Line:
 
     def __init__(self, start, finish):
+        print("A",start, finish)
         self.start = start
         self.finish = finish
         self.move = finish - start
@@ -199,7 +246,7 @@ class PolygonObstacle(Obstacle):
         assert len(points) == len(self.lines)
 
     def collisionCheck(self, point):
-        pointsHit = len(self.raycast(point, VectorN((1,0))))
+        pointsHit = len(self.raycast(point, Vector2(1,0)))
         return (pointsHit % 2) != 0
 
     def raycast(self, start, direction, limitedRay = False):
@@ -297,8 +344,9 @@ class RectangleObstacle(Obstacle):
 
     def __init__(self, cX, cY, orientation, width, height):
         orth = orientation + math.pi / 2
-        orientV = height / 2  * Vector2(math.cos(orientation), math.sin(orientation))
-        orthV = width / 2 * Vector2(math.cos(orth), math.sin(orth))
+        C = Vector2(cX, cY)
+        orientV = Vector2(math.cos(orientation), math.sin(orientation)) * (height / 2) 
+        orthV = Vector2(math.cos(orth), math.sin(orth)) * (width / 2)
         points = [C + orthV + orientV, C + orthV - orientV, C - orthV - orientV, C - orthV + orientV]
         self.wrapped = PolygonObstacle(points)
 
@@ -306,14 +354,14 @@ class RectangleObstacle(Obstacle):
         return self.wrapped.collisionCheck(point)
 
     def raycast(self, start, direction, limitedRay = False):
-        raise self.wrapped.raycast(start, direction, limitedRay)
+        return self.wrapped.raycast(start, direction, limitedRay)
 
 class CircleObstacle(Obstacle):
 
     def __init__(self, x, y, r):
         self.x = x
         self.y = y
-        self.c = VectorN((x, y))
+        self.c = Vector2(x, y)
         self.r = r
 
     def collisionPointSet(self, pointStart, goal):
@@ -322,12 +370,12 @@ class CircleObstacle(Obstacle):
         angle = startAngle
         points = []
         minDist = float("inf")
-        goalDist = (goal - VectorN((self.x, self.y)))
+        goalDist = (goal - Vector2(self.x, self.y))
         closestAngle = goalDist.angle()
         closestPoint = self.c + goalDist.norm() * self.r
         while angle < startAngle + 2 * math.pi:
             angle += radPer1Unit
-            points.append(self.c + VectorN((math.cos(angle), math.sin(angle)) * self.r))
+            points.append(self.c + Vector2(math.cos(angle), math.sin(angle)) * self.r)
         pointsCopy = points[:]
         angle = startAngle + radPer1Unit
         if closestAngle < angle:
@@ -370,7 +418,7 @@ class CircleObstacle(Obstacle):
                 points.append(closestPoint)
                 break
             else:
-                points.append(self.c + VectorN((math.cos(angle), math.sin(angle)) * self.r))
+                points.append(self.c + Vector2(math.cos(angle), math.sin(angle)) * self.r)
         return closestPoint, points
 
     def raycast(self, start, direction, limitedRay = False):
@@ -410,7 +458,7 @@ class CircleObstacle(Obstacle):
 
 
     def collisionCheck(self, point):
-        return (point - VectorN((self.x, self.y))).magnitude() < self.r
+        return (point - Vector(self.x, self.y)).magnitude() < self.r
 
     def get_position(self):
         return int(self.x), int(self.y)
