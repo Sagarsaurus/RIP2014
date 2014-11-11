@@ -153,7 +153,9 @@ class QuadTree(Tree):
 	def samplePoint(self, towardsGoal=False): 
 		p, c, quads = self.root.samplePoint(self.limit, lambda p, c=None: self.collision(p, c))
 		if p: 
-			n = c + (p - c).norm() * 10
+			if (p-c).magnitude() > 10: 
+				n = c + (p - c).norm() * 10
+			else: n = p
 			for quad in self.getQuads(n):
 				quad.points += [n]
 			return n, c
