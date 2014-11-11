@@ -67,7 +67,74 @@ class Vector2:
     def to_tuple(self):
         return int(self.x), int(self.y)
 
+class VectorN:
 
+    def __init__(self, components):
+        self.components = [float(x) for x in components]
+        self.n = len(components)
+
+    def __add__(self, other):
+        if self.n == other.n:
+            comp = [0 for x in self.components]
+            for i in range(self.n):
+                comp[i] = self.components[i] + other.components[i]
+            return VectorN(comp)
+        else:
+            raise Exception()
+
+    def __sub__(self, other):
+        if self.n == other.n:
+            comp = [0 for x in self.components]
+            for i in range(self.n):
+                comp[i] = self.components[i] - other.components[i]
+            return VectorN(comp)
+        else:
+            raise Exception()
+
+    def __mul__(self, other):
+        return VectorN([x * other for x in self.components])
+
+    def __div__(self, other):
+        return VectorN([x / other for x in self.components])
+
+    def __truediv__(self, other):
+        return self.__div__(other)
+
+    def __eq__(self, other):
+        if self.n == other.n:
+            for i in range(self.n):
+                if self.components[i] != other.components[i]:
+                    return False
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return str(self.to_tuple())
+
+    def __repr__(self): 
+        return self.__str__()
+
+    def __hash__(self):
+        return  hash(self.to_tuple())
+
+    def dot(self, other):
+        if self.n == other.n:
+            comp = [0 for x in self.components]
+            for i in range(self.n):
+                comp[i] = self.components[i] * other.components[i]
+            return sum(comp)
+        else: 
+            raise Exception()
+
+    def to_tuple(self):
+        return tuple(self.components)
+
+    def magnitude(self):
+        return math.sqrt(sum([x ** 2 for x in self.components]))
+
+    def norm(self):
+        return self / self.magnitude()
 class Line:
 
     def __init__(self, start, finish):
