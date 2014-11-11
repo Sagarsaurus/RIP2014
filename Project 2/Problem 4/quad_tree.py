@@ -1,11 +1,13 @@
 import random
 from util import *
+from functools import reduce
+import itertools
+import operator
+
+def prod(iterable):
+    return reduce(operator.mul, iterable, 1)
 
 class Rect:
-	TL = 0
-	TR = 1
-	BL = 2
-	BR = 3
 	def __init__(self, x, y, w, h):
 		self.x = x
 		self.y = y
@@ -33,9 +35,38 @@ class Rect:
 	def __repr__(self): 
 		return self.__str__()
 
+class NRect: 
+	def __init__(self, pos, size): 
+		self.pos = pos
+		self.size = size
+
+	def area(self): 
+		return prod(self.size)
+
+	def split(self): 
+		size = list(s / 2 for s in self.size)
+		permutions = itertools.product((0,1), repeat=len(self.pos))
+		newPos = (tuple(x+d*s for d, x, s in zip(p, self.pos, size)) for p in permutions)
+		quads = [NRect(pos, size) for pos in newPos]
+		return quads
+
+	def __str__(self):
+		return "{ (" +  ", ".join("{:.1f}".format(x) for x in self.pos) + "), (" +  ", ".join("{:.1f}".format(x) for x in self.size) + ") }"
+
+	def __repr__(self): 
+		return self.__str__()
+
+	def sample(self):
+		return NPoint(tuple(x + s * random.random() for x, s in zip(self.pos, self.size)))
+
+	def quad(self, point): 
+		coord = tuple(p >= x + s / 2 for p, x, s in zip(point.components, self.pos, self.size))
+		quad = sum(x * 2 ** i for i, x in enumerate(reversed(coord)))
+		return quad
+
 class Node: 
 	def __init__(self): 
-		x=5
+		pass
 
 class Edge:
 	def __init__(self, l, r): 
@@ -54,14 +85,19 @@ class Tree:
 		self.V += [n]
 		self.E += [Edge(p,n)]
 
-class Point(Node, Vector2): 
-	def __init__(self, x, y): 
-		self.x = x
-		self.y = y
-	def __str__(self):
-		return "(" +  "{:.1f}".format(self.x) + ", " + "{:.1f}".format(self.y) + ")"
-	def __repr__(self): 
-		return self.__str__()
+# class Point(Node, Vector2): 
+# 	def __init__(self, x, y): 
+# 		self.x = x
+# 		self.y = y
+
+class NPoint(VectorN, Node): 
+	def __init__(self, pos): 
+		super().__init__(pos)
+
+r = NRect((32, 32 ,32), (16,16,16))
+print(r)
+print(r.split())
+print(r.quad(NPoint( (41,38,41) )))
 
 class QuadNode(Node): 
 	def __init__(self, rect): 
@@ -91,9 +127,6 @@ class QuadNode(Node):
 		quad = self.rect.quad(self.points[0])
 		self.quads[quad].addPoint(self.points[0], limit)
 
-	def distance(self, l, r): 
-		return (l.x-r.x)**2 + (l.y-r.y)**2
-
 	def remove(self, p): 
 		self.points.remove(p)
 
@@ -118,7 +151,7 @@ class QuadNode(Node):
 			if sample:
 				quads += [self]
 				if not closest: 
-					val, closest = min((self.distance(sample, p), p) for p in self.points)
+					val, closest = min(((sample - p).magnitude(), p) for p in self.points)
 					if collision(sample, closest): 
 						sample, closest, quads = None, None, None
 		self.samples += 1
@@ -126,7 +159,7 @@ class QuadNode(Node):
 
 class QuadTree(Tree): 
 	def __init__(self, w, h, limit, obstacles, start, goal): 
-		self.root = QuadNode(Rect(0, 0, w, h))
+		self.root = QuadNode(NRect( (0, 0) , (w, h) ))
 		self.limit = limit
 		self.obstacles = obstacles
 		self.addPoint(start)

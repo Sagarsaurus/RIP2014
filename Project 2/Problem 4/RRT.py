@@ -19,7 +19,7 @@ class RRT:
 		else: return None, None
 
 obstacles = [CircleObstacle(500,350,200), CircleObstacle(150,600,120)]
-rrt = RRT(1024, 768, 16, obstacles, Point(100, 100), Point(700, 700))
+rrt = RRT(1024, 768, 16, obstacles, NPoint((100, 100)), NPoint((700, 700)))
 
 class App:
 	def __init__(self, master, rrt):
@@ -44,9 +44,9 @@ class App:
 		p, e = rrt.grow_baseline()
 		print(p)
 		if p:
-			self.draw_dot(p.x,p.y,1)
-			self.canvas.create_line(e.l.x, e.l.y, e.r.x, e.r.y)
-		if len(rrt.tree.V) < 10000: 
+			self.draw_dot(p.components[0], p.components[1], 1)
+			self.canvas.create_line(e.l.components[0], e.l.components[1], e.r.components[0], e.r.components[1])
+		if len(rrt.tree.V) < 2000: 
 			self.master.after(1, self.animate_search)
 
 	def draw_tree(self, tree): 
@@ -55,6 +55,7 @@ class App:
 		for e in tree.E: 
 			self.canvas.create_line(e.l.x, e.l.y, e.r.x, e.r.y)
 
+print()
 root = tk.Tk()
 app = App(root, rrt)
 root.mainloop()
