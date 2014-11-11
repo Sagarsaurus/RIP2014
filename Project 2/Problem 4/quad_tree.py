@@ -188,17 +188,12 @@ class QuadTree():
 					return True
 		return False
 
-	def samplePoint(self, towardsGoal=False): 
+	def samplePoint(self, step): 
 		p, c, quads = self.root.samplePoint(self.limit, lambda p, c=None: self.collision(p, c))
+		print(p, c)
 		if p: 
-			if (p-c).magnitude() > 10: 
-				n = c + (p - c).norm() * 10
-			else: 
-				n = p
-				if not self.arm.ArmCollisionCheck(n.components, self.obstacles): 
-					self.addPoint(n)
-					new = self.arm.a3
-					self.arm.setQ(c.components)
-					old = self.arm.a3
-					return new, old
+			if (p-c).magnitude() > step: 
+				n = c + (p - c).norm() * step
+			else: n = p
+			return n, c
 		return None, None

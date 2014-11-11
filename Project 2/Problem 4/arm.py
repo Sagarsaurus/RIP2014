@@ -3,7 +3,7 @@ from util import *
 
 class RobotArm:
 
-	def __init__(self, l, q):
+	def __init__(self, l, q=(0,0,0)):
 		self.l = l
 		self.setQ(q)
 
