@@ -13,7 +13,7 @@ class RRT:
 		self.arm = arm
 
 	def grow_baseline(self):
-		p, c = self.qt.samplePoint(0.02)
+		p, c = self.qt.samplePoint(0.1)
 		print(p,c)
 		if p and c:
 			if not self.arm.ArmCollisionCheck(p.components, self.obstacles): 
@@ -27,10 +27,10 @@ class RRT:
 
 obstacles = [CircleObstacle(500,350,200), CircleObstacle(150,600,120)]
 # obstacles = []
-space = (2*math.pi, 2*math.pi, 2*math.pi)
+space = ((-math.pi,)*3, (2*math.pi,)*3)
 # start = RobotArm.inverseKinematics(start.to_tuple(), l)
 # goal = RobotArm.inverseKinematics(goal.to_tuple(), l)
-rrt = RRT(space, 16, RobotArm((200, 200, 400)), obstacles, NPoint((0, 0, 0)), NPoint((3, 3, 3)))
+rrt = RRT(space, 16, RobotArm((100, 100, 350)), obstacles, NPoint((0, 0, 0)), NPoint((3, 3, 3)))
 
 class App:
 	def __init__(self, master, rrt, w, h):

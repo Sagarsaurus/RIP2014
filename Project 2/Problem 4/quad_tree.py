@@ -160,7 +160,7 @@ class QuadNode(Node):
 
 class QuadTree(): 
 	def __init__(self, space, limit, obstacles, start, goal): 
-		self.root = QuadNode(NRect( (0,)*len(space) , space ))
+		self.root = QuadNode(NRect( space[0] , space[1] ))
 		self.limit = limit
 		self.obstacles = obstacles
 		self.addPoint(start)
