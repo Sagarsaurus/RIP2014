@@ -126,8 +126,8 @@ class QuadNode(Node):
 	def weight(self, quad, goalDirected):
 		if goalDirected: 
 			if quad.goal: 
-				return -1000
-			return 1000
+				return quad.samples
+			return quad.samples * 25
 		return quad.samples 
 
 	def samplePoint(self, limit, collision, goalDirected):
