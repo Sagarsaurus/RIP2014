@@ -125,10 +125,10 @@ class QuadNode(Node):
 
 	def weight(self, quad):
 		# print(self.goal)
-		if quad.goal: 
-			return -1000
-		return 1000
-		return not self.goal#quad.samples 
+		# if quad.goal: 
+		# 	return -1000
+		# return 1000
+		return quad.samples 
 
 	def samplePoint(self, limit, collision):
 		sample, closest, quads = None, None, None

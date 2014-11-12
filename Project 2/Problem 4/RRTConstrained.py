@@ -132,7 +132,7 @@ class App:
 			self.draw_arm(rrt.arm, "blue")
 
 		if len(rrt.worldTree.V) < 3000 and (not p or not rrt.goalNear(p.value)): 
-			self.master.after(100, self.animate_search)
+			self.master.after(10, self.animate_search)
 
 	def draw_tree(self, tree): 
 		for p in tree.V: 
