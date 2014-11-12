@@ -33,14 +33,22 @@ class RRT:
 				return self.worldTree.V[-1], self.worldTree.E[-1]
 		return None, None
 
+	def getPath(self):
+		path = [self.goal]
+		cur = self.configTree.V[-1]
+		while cur: 
+			path = [cur.value] + path
+			cur = cur.parent
+		return path
+
 	def goalNear(self, p): 
-		print([ (d, t) for d, t in zip(p - self.worldGoal, self.goalApproximation)])
-		print([ (abs(d) < t) for d, t in zip(p - self.worldGoal, self.goalApproximation)])
-		print(p, self.worldGoal)
-		dist = (p - self.worldGoal).magnitude()
-		if dist < self.closest:
-			self.closest = dist
-			print(dist)
+		# print([ (d, t) for d, t in zip(p - self.worldGoal, self.goalApproximation)])
+		# print([ (abs(d) < t) for d, t in zip(p - self.worldGoal, self.goalApproximation)])
+		# print(p, self.worldGoal)
+		# dist = (p - self.worldGoal).magnitude()
+		# if dist < self.closest:
+		# 	self.closest = dist
+		# 	print(dist)
 		if not any(abs(d) > t for d, t in zip(p - self.worldGoal, self.goalApproximation)):
 			# self.configTree.add(self.goal, p)
 			# self.path = self.configTree(self.goal)
@@ -66,15 +74,18 @@ class App:
 		frame.pack()
 		self.canvas = tk.Canvas(master, width=w, height=h)
 		self.canvas.pack()
+		self.master.after(1000, self.animate_search)
+		self.draw_world()
+		print(rrt.goal)
+
+	def draw_world(self):
+		self.canvas.create_line(xOffset, 0, xOffset, self.w)
+		self.canvas.create_line(0, yOffset, 1000, yOffset)
 		for obstacle in obstacles: 
 			self.draw_obstacle(obstacle)
-		self.master.after(1000, self.animate_search)
-		self.canvas.create_line(xOffset, 0, xOffset, w)
-		self.canvas.create_line(0, yOffset, 1000, yOffset)
 		self.draw_arm(rrt.arm.setQ(rrt.start), "red")
 		self.draw_arm(rrt.arm.setQ(rrt.goal), "green")
 		self.draw_arm(rrt.arm.setQ(rrt.goal), "green")
-		print(rrt.goal)
 
 	def draw_dot(self, x, y, r): 
 		self.canvas.create_oval(x-r + xOffset, y-r + yOffset, x+r + xOffset, y + r + yOffset)
@@ -114,6 +125,19 @@ class App:
 
 		if len(rrt.worldTree.V) < 3000 and (not p or not rrt.goalNear(p.value)): 
 			self.master.after(10, self.animate_search)
+		else: 
+			self.path = rrt.getPath()
+			self.pos = 0
+			self.canvas.delete("all")
+			self.draw_world()
+			self.master.after(1000, self.animate_movement)
+
+	def animate_movement(self):
+		self.deleteArm(rrt.arm)
+		self.draw_arm(rrt.arm.setQ(self.path[self.pos]), "blue")
+		self.pos+=1
+		if self.pos < len(self.path):
+			self.master.after(100, self.animate_movement)
 
 	def draw_tree(self, tree): 
 		for p in tree.V: 
