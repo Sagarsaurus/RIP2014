@@ -7,8 +7,8 @@ Created on Tue Nov 04 21:13:07 2014
 
 import math
 from util import *
-import numpy as np
-import cv2
+#import numpy as np
+#import cv2
 
 def init2D(width, height, value=0):
     newList=[]
@@ -185,19 +185,14 @@ class App:
         mapSize=(230,150)
         minDistance=30
 
-        #fmg=FieldMapGenerator(mapSize, goal, obstacles,minDistance)
-        #fmg.repulsionField()
 
         a=Agent(start,goal,mapSize,obstacles,minDistance)
-        #FMG=FieldMapGenerator(mapSize, goal, obstacles,minDistance)
-        #img=FMG.computeField()
+
         plan,fmap=a.run()
         fmap=fit(fmap,255)
-        print(len(plan))
+        print(len(plan))/()
         for elt in plan:
-            fmap[elt[1]][elt[0]]=255#-fmap[elt[1]][elt[0]]
-
-        cv2.imwrite("test.jpg",np.array(fmap))
+            fmap[elt[1]][elt[0]]=255
 
         bugPath = []
         for i in range(0, len(plan) - 1):
@@ -251,7 +246,21 @@ class App:
             self.canvas.create_polygon(points);
         elif isinstance(obstacle, RectangleObstacle):
             self.draw_obstacle(obstacle.wrapped)
+#
+#root = tk.Tk()
+#app = App(root, 1, 2, 1024, 768)
+#root.mainloop()
+            
+obstacles=[CircleObstacle(50,60,20),CircleObstacle(150,75,35)]
+#,CircleObstacle(150,130,10)
+start=(10,60)
+goal=(210,75)
+mapSize=(230,150)
+minDistance=30
 
-root = tk.Tk()
-app = App(root, 1, 2, 1024, 768)
-root.mainloop()
+a=Agent(start,goal,mapSize,obstacles,minDistance)
+plan,fmap=a.run()
+#print len(plan)
+#print (Vector2(start[0],start[1])-Vector2(goal[0],goal[1])).magnitude()
+#print(len(plan))/(Vector2(start[0],start[1])-Vector2(goal[0],goal[1])).magnitude()
+fmap=fit(fmap,255)
