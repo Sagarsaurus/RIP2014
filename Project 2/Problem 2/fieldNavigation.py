@@ -5,7 +5,7 @@ Created on Tue Nov 04 21:13:07 2014
 @author: Richard
 """
 
-import math
+import math, pygame
 from util import *
 #import numpy as np
 #import cv2
@@ -251,8 +251,7 @@ class App:
 #app = App(root, 1, 2, 1024, 768)
 #root.mainloop()
             
-obstacles=[CircleObstacle(50,60,20),CircleObstacle(150,75,35)]
-#,CircleObstacle(150,130,10)
+obstacles=[CircleObstacle(50,60,20),CircleObstacle(150,75,35), CircleObstacle(150,130,10)]
 start=(10,60)
 goal=(210,75)
 mapSize=(230,150)
@@ -264,3 +263,68 @@ plan,fmap=a.run()
 #print (Vector2(start[0],start[1])-Vector2(goal[0],goal[1])).magnitude()
 #print(len(plan))/(Vector2(start[0],start[1])-Vector2(goal[0],goal[1])).magnitude()
 fmap=fit(fmap,255)
+
+# initialize pygame
+pygame.init()
+
+# Define some colors
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+BLUE = (0, 191, 255)
+
+pygame.display.set_caption("Project 3")
+
+done = False
+
+#Background image
+background_image = pygame.image.load("fmap2.png")
+
+size = (width, height) = background_image.get_size()
+
+# Set the width and height of the screen [width, height]
+# size = (640, 480)
+screen = pygame.display.set_mode(size)
+
+# Used to manage how fast the screen updates
+clock = pygame.time.Clock()
+
+counter = 0
+index = 0
+temp_list = []
+
+# -------- Main Program Loop -----------
+while not done:
+    # --- Main event loop
+    for event in pygame.event.get(): # User did something
+        if event.type == pygame.QUIT: # If user clicked close
+            done = True # Flag that we are done so we exit this loop
+
+    # --- Drawing code should go here
+
+    # First, clear the screen to white. Don't put other drawing commands
+    # above this, or they will be erased with this command.
+    # screen.fill(WHITE)
+    screen.blit(background_image, [0, 0])
+
+    # Animate the path slowly
+    if counter % 5 == 0 and index in range(len(plan)):
+        temp_list.append(plan[index])
+        index += 1
+
+    counter += 1
+
+    for point in temp_list:
+        pygame.draw.circle(screen, RED, point, 5, 0)
+
+    # --- Go ahead and update the screen with what we've drawn.
+    pygame.display.flip()
+
+    # --- Limit to 60 frames per second
+    clock.tick(60)
+
+# Close the window and quit.
+# If you forget this line, the program will 'hang'
+# on exit if running from IDLE.
+pygame.quit()
