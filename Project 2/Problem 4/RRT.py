@@ -35,7 +35,7 @@ class RRT:
 					self.closest = dist
 				if((p - self.goal).magnitude() < goalApproximation):
 					self.configTree.add(self.goal, c)
-					self.path = self.configTree(self.goal)
+					self.path = self.configTree.pathToStart(self.goal)
 					self.pathFound = True
 				self.arm.setQ(p.to_tuple())
 				return self.worldTree.V[-1], self.worldTree.E[-1]

@@ -1,0 +1,1 @@
+James Liu - Coded Bug 1 and Bug 2 for problem #1, solved and implemented Robot Arm IK and FK for #3 onwards and constructed potential field for 3b. Animated #1 and #3. Attempted #5
