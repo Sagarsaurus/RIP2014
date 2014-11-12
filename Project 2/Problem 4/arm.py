@@ -1,17 +1,6 @@
 import math
 from util import *
 
-def matMult(a, b):
-	l1 = len(a)
-	l2 = len(a[0])
-	l3 = len(b)
-	l4 = len(b[1])
-	c = [[0 for x in range(l1)] for x in range(l4)]
-	if l2 == l3:
-		for i in range(l1):
-			for j in range(l3):
-
-
 class RobotArm:
 
 	def __init__(self, l, q=(0,0,0)):
@@ -23,7 +12,7 @@ class RobotArm:
 		t = 0
 		cQ = q
 		while t < 1:
-			for i in len(q[0]):
+			for i in len(q1):
 				cQ[i] = lerp(q1[i], q2[i], t)
 			if self.ArmCollisionCheck(cQ, obstacles):
 				return True
@@ -32,9 +21,10 @@ class RobotArm:
 
 	def ArmCollisionCheck(self, q, obstacles):
 		self.setQ(q)
-		r1 = raycast(self.link1.start, self.link1.move, obstacles, limitedRay = True)
-		r2 = raycast(self.link2.start, self.link2.move, obstacles, limitedRay = True)
-		r3 = raycast(self.link3.start, self.link3.move, obstacles, limitedRay = True)
+
+		r1 = raycast(Vector2(self.link1.start[0], self.link1.start[1]), Vector2(self.link1.move[0], self.link1.move[1]) , obstacles, limitedRay = True)
+		r2 = raycast(Vector2(self.link2.start[0], self.link2.start[1]), Vector2(self.link2.move[0], self.link2.move[1]) , obstacles, limitedRay = True)
+		r3 = raycast(Vector2(self.link3.start[0], self.link3.start[1]), Vector2(self.link3.move[0], self.link3.move[1]) , obstacles, limitedRay = True)
 		r = r1 + r2 + r3
 		return len(r) != 0
 
@@ -53,21 +43,10 @@ class RobotArm:
 		X2 = x[0] - l[2] * math.cos(x[2])
 		Y2 = x[1] - l[2] * math.sin(x[2])
 		det = X2**2 + Y2**2
-		q = [0] * 3
-		q[0] = math.acos(X2 / math.sqrt(det)) + math.acos((l[0]**2 - l[1]**2 + det) / (2 * l[0] * math.sqrt(det)))
-		q[1] = math.pi + math.acos((l[0]**2 + l[1]**2 - det)/(2 * l[0] * l[1]))
-		q[2] = x[2] - q[0] - q[1]
-		return q[0], q[1], q[2]
-
-	def inverseJacobian(dx, q, l):
-		cos = math.cos
-		sin = math.sin
-		q1, q2, q3 = q
-		dx1, dx2, dx3 = dx
-		dq1  = dx1 * (-cos(q1 + q2)/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))))            + dx2 * (-sin(q1 + q2)/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))))            + dx3 * ((cos(q1 + q2 + q3)*sin(q1 + q2) - sin(q1 + q2 + q3)*cos(q1 + q2))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))))
-		dq2  = dx1 * ((cos(q1 + q2) + cos(q1))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1)))) + dx2 * ((sin(q1 + q2) + sin(q1))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1)))) + dx3 * (-(cos(q1 + q2 + q3)*sin(q1 + q2) - sin(q1 + q2 + q3)*cos(q1 + q2) + cos(q1 + q2 + q3)*sin(q1) - sin(q1 + q2 + q3)*cos(q1))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))))
-		dq3 = dx1 (-cos(q1)/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))))                + dx2 * (-sin(q1)/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))))                 + dx3 * ((cos(q1 + q2 + q3)*sin(q1) - sin(q1 + q2 + q3)*cos(q1) + 2*cos(q1 + q2)*sin(q1) - 2*sin(q1 + q2)*cos(q1))/(2*(cos(q1 + q2)*sin(q1) - sin(q1 + q2)*cos(q1))))
-		return (dq1, dq2, dq3)
+		Q1 = math.fmod(math.acos(X2 / math.sqrt(det)) + math.acos((l[0]**2 - l[1]**2 + det) / (2 * l[0] * math.sqrt(det))), 2*math.pi)
+		Q2 = math.fmod(math.pi + math.acos((l[0]**2 + l[1]**2 - det)/(2 * l[0] * l[1])), 2*math.pi)
+		Q3 = math.fmod(x[2] - Q1 - Q2, 2*math.pi)
+		return Q1, Q2, Q3
 
 	def getEnd(self):
 		return VectorN( (self.a3[0], self.a3[1], self.theta) )

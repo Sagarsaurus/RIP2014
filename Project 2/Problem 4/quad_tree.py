@@ -86,6 +86,10 @@ class QuadNode(Node):
 		self.rect = rect
 		self.points = []
 		self.samples = 0
+		self.goal = None
+
+	def goalNode(self, goal):
+		self.goal = goal
 
 	def getQuad(self, p):
 		quad = self.rect.quad(p)
@@ -105,6 +109,9 @@ class QuadNode(Node):
 
 	def split(self, limit):
 		self.quads = [QuadNode(q) for q in self.rect.split()]
+		if self.goal:
+			goalquad = self.rect.quad(self.goal)
+			self.quads[goalquad].goalNode(self.goal)
 		quad = self.rect.quad(self.points[0])
 		self.quads[quad].addPoint(self.points[0], limit)
 
@@ -116,41 +123,51 @@ class QuadNode(Node):
 	def __repr__(self): 
 		return self.__str__()
 
+	def weight(self, quad):
+		# print(self.goal)
+		if quad.goal: 
+			return -1000
+		return 1000
+		return not self.goal#quad.samples 
+
 	def samplePoint(self, limit, collision):
 		sample, closest, quads = None, None, None
 		if self.rect.area() < limit or not self.points: 
 			sample, closest, quads = self.rect.sample(), None, [self]
-			# if not collision(s):
-			# 	sample, closest, quads = s, None, [self]
 		else: 
 			if not self.quads and self.points: 
 				self.split(limit)
-			small = min(quad.samples for quad in self.quads)
-			mins = list(idx for (idx, quad) in enumerate(self.quads) if quad.samples == small)
+			small = min(self.weight(quad) for quad in self.quads)
+			mins = list(idx for (idx, quad) in enumerate(self.quads) if self.weight(quad) == small)
+			# print("mins", small, mins, [self.weight(quad) for quad in self.quads])
 			quad = self.quads[random.choice(mins)]
 			sample, closest, quads = quad.samplePoint(limit, collision)
 			if sample:
 				quads += [self]
 				if not closest: 
 					val, closest = min(((sample - p).magnitude(), p) for p in self.points)
-					# if collision(sample, closest): 
-					# 	sample, closest, quads = None, None, None
 		self.samples += 1
 		return sample, closest, quads
 
 class QuadTree(): 
 	def __init__(self, space, limit, obstacles, start, goal): 
 		self.root = QuadNode(NRect( space[0] , space[1] ))
+		self.root.goalNode(goal)
 		self.limit = limit
 		self.obstacles = obstacles
 		self.addPoint(start)
 		self.start = start
 		self.goal = goal
 		self.path = []
+		print(self.root)
 
 	def addPoint(self, p):
+		# self.root.addPoint(p, self.limit)
+		# print(p)
 		for quad in self.getQuads(p):
-			quad.points += [p]
+			if len(quad.points) == 1:
+				quad.addPoint(p, self.limit)
+			else: quad.points += [p]
 
 	def getQuads(self, p): 
 		return self.root.getQuads(p)
@@ -168,6 +185,7 @@ class QuadTree():
 
 	def samplePoint(self, step): 
 		p, c, quads = self.root.samplePoint(self.limit, lambda p, c=None: self.collision(p, c))
+		# print(self.getQuads(VectorN( (6,0,0) )) )
 		if p: 
 			if (p-c).magnitude() > step: 
 				n = c + (p - c).norm() * step
