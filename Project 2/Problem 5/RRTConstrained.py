@@ -124,7 +124,7 @@ class App:
 			self.canvas.delete(line) 
 
 	def animate_search(self): 
-		p, e, x = rrt.grow_baseline(0.2, True)
+		p, e, x = rrt.grow_baseline(0.02, True)
 		# print(p)
 		if p:
 			self.draw_dot(p.value[0], p.value[1], 1)
@@ -146,7 +146,7 @@ class App:
 		self.draw_arm(rrt.arm.setQ(self.path[self.pos]), "blue")
 		self.pos+=1
 		if self.pos < len(self.path):
-			self.master.after(100, self.animate_movement)
+			self.master.after(10, self.animate_movement)
 
 	def draw_tree(self, tree): 
 		for p in tree.V: 
