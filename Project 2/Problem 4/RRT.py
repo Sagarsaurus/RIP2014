@@ -41,34 +41,6 @@ class RRT:
 				return self.worldTree.V[-1], self.worldTree.E[-1]
 		return None, None
 
-	def RGD_New_Cofig(qs, qnear, epsilon = 0.00001, dMax = 1):
-		i, j = 0, 0
-		dx_error = ComputeError(qs, qnear)
-		while i < I and j < J and dx_error.magnitude() > epsilon:
-			i += 1
-			j += 1
-			qs2 = qs #plus random displacement
-			dx_error2 = ComputeError(qs2, qnear)
-			if dx_error2 < dx_error:
-				j = 0
-				qs = qs2
-				dx_error = dx_error2
-			if dx_error < epsilon:
-				return not self.arm.ArmCollisionCheck(qs.components, self.obstacles)
-		return False
-
-	def TS_New_Config(qs, qnear):
-		C = [[1,0,0],[0,0,0],[0,0,1]]
-		J =  self.arm.jacobian(qnear)
-		Jt = self.arm.jacobianT(qnear)
-		dq = qs - qnear
-		dqT = [[dq.components[0]],[[dq.components[1]],[[dq.components[2]]]
-		dq2 = dq - VectorN(matMult(Jt, matMult(C, matMult(J, dqT))))
-		return RGD_New_Cofig(qs, qnear)
-
-	def ComputeError(qs, qnear):
-		pass
-
 obstacles = [CircleObstacle(200,225,100)]#, CircleObstacle(150,600,120)]
 # obstacles = [RectangleObstacle(200, 220, 1.57, 100, 100)]
 # obstacles = []
