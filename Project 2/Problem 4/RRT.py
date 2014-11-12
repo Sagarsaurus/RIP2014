@@ -17,7 +17,7 @@ class RRT:
 		self.pathFound = False
 		self.path = []
 		self.closest = float('inf')
-		self.goalApproximation = (10, 10, 0.1)
+		self.goalApproximation = (1, 1, 0.1)
 
 	def grow_baseline(self, step, goalDirected):
 		p, c = self.qt.samplePoint(step, goalDirected)
@@ -34,11 +34,14 @@ class RRT:
 		return None, None
 
 	def goalNear(self, p): 
+		print([ (d, t) for d, t in zip(p - self.worldGoal, self.goalApproximation)])
+		print([ (abs(d) < t) for d, t in zip(p - self.worldGoal, self.goalApproximation)])
+		print(p, self.worldGoal)
 		dist = (p - self.worldGoal).magnitude()
 		if dist < self.closest:
 			self.closest = dist
 			print(dist)
-		if dist < self.goalApproximation[0]:
+		if not any(abs(d) > t for d, t in zip(p - self.worldGoal, self.goalApproximation)):
 			# self.configTree.add(self.goal, p)
 			# self.path = self.configTree(self.goal)
 			return True
@@ -48,7 +51,7 @@ obstacles = [CircleObstacle(200,225,100)]#, CircleObstacle(150,600,120)]
 # obstacles = [RectangleObstacle(200, 220, 1.57, 100, 100)]
 # obstacles = []
 space = ((-2*math.pi,)*3, (4*math.pi,)*3)
-rrt = RRT(space, 0.00001, RobotArm((200, 200, 100)), obstacles, VectorN((260, 130, 1)), VectorN((-140, 160, -2)), 8 )
+rrt = RRT(space, 0.00001, RobotArm((200, 200, 100)), obstacles, VectorN((260, 130, 1)), VectorN((-140, 160, 2*math.pi-2)), 8 )
 
 xOffset = 500
 yOffset = 300

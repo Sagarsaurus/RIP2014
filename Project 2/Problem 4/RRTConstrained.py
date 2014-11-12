@@ -8,21 +8,21 @@ class RRT:
 		self.space = space
 		self.start = start #VectorN(RobotArm.inverseKinematics(start.to_tuple(), arm.l))
 		self.goal = goal #VectorN(RobotArm.inverseKinematics(goal.to_tuple(), arm.l))
-		self.worldGoal = goal
 		self.obstacles = obstacles
 		self.qt = QuadTree(space, limit, obstacles, self.start, self.goal)
 		self.arm = arm
+		self.worldGoal = arm.setQ(goal).getEnd()
 		arm.setQ(start)
 		self.worldTree = Tree(arm.getEnd(), precision)
 		self.configTree = Tree(self.start, precision)
 		self.pathFound = False
 		self.path = []
 		self.closest = float('inf')
-		self.goalApproximation = (10, 10, 0.1)
+		self.goalApproximation = (1, 1, 0.1)
 		self.constrain = constrain
 
-	def grow_baseline(self, step):
-		p, c = self.qt.samplePoint(step)
+	def grow_baseline(self, step, goalDirected):
+		p, c = self.qt.samplePoint(step, goalDirected)
 		x = Vector2(p[0], p[1])
 		if p and c:
 			p = self.adjust(p)
@@ -55,13 +55,27 @@ class RRT:
 		return None
 
 	def goalNear(self, p): 
+		# print(p, self.worldGoal)
+		# dist = (p - self.worldGoal).magnitude()
+		# if dist < self.closest:
+		# 	self.closest = dist
+		# 	print(dist)
+		# if dist < self.goalApproximation[2]:
+		# 	self.configTree.add(self.goal, c)
+		# 	self.path = self.configTree(self.goal)
+		# 	return True
+		# return False
+
+		print([ (d, t) for d, t in zip(p - self.worldGoal, self.goalApproximation)])
+		print([ (abs(d) < t) for d, t in zip(p - self.worldGoal, self.goalApproximation)])
+		print(p, self.worldGoal)
 		dist = (p - self.worldGoal).magnitude()
 		if dist < self.closest:
 			self.closest = dist
 			print(dist)
-		if dist < self.goalApproximation[2]:
-			self.configTree.add(self.goal, c)
-			self.path = self.configTree(self.goal)
+		if not any(abs(d) > t for d, t in zip(p - self.worldGoal, self.goalApproximation)):
+			# self.configTree.add(self.goal, p)
+			# self.path = self.configTree(self.goal)
 			return True
 		return False
 
@@ -122,11 +136,10 @@ class App:
 			self.canvas.delete(line) 
 
 	def animate_search(self): 
-		p, e, x = rrt.grow_baseline(0.2)
+		p, e, x = rrt.grow_baseline(0.2, True)
 		# print(p)
 		if p:
 			self.draw_dot(p.value[0], p.value[1], 1)
-			self.draw_dot(x.x, x.y, 1)
 			self.draw_line(e.l.value, e.r.value)
 			self.deleteArm(rrt.arm)
 			self.draw_arm(rrt.arm, "blue")
