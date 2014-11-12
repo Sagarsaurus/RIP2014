@@ -19,8 +19,8 @@ class RRT:
 		self.closest = float('inf')
 		self.goalApproximation = (10, 10, 0.1)
 
-	def grow_baseline(self, step):
-		p, c = self.qt.samplePoint(step)
+	def grow_baseline(self, step, goalDirected):
+		p, c = self.qt.samplePoint(step, goalDirected)
 		if p and c:
 			if not self.arm.ArmCollisionCheck(p.components, self.obstacles): 
 				# print(p)
@@ -38,9 +38,9 @@ class RRT:
 		if dist < self.closest:
 			self.closest = dist
 			print(dist)
-		if dist < self.goalApproximation[2]:
-			self.configTree.add(self.goal, c)
-			self.path = self.configTree(self.goal)
+		if dist < self.goalApproximation[0]:
+			# self.configTree.add(self.goal, p)
+			# self.path = self.configTree(self.goal)
 			return True
 		return False
 
@@ -101,7 +101,7 @@ class App:
 			self.canvas.delete(line) 
 
 	def animate_search(self): 
-		p, e = rrt.grow_baseline(0.2)
+		p, e = rrt.grow_baseline(0.2, True)
 		# print(p)
 		if p:
 			self.draw_dot(p.value[0], p.value[1], 1)

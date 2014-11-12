@@ -123,25 +123,25 @@ class QuadNode(Node):
 	def __repr__(self): 
 		return self.__str__()
 
-	def weight(self, quad):
-		# print(self.goal)
-		# if quad.goal: 
-		# 	return -1000
-		# return 1000
+	def weight(self, quad, goalDirected):
+		if goalDirected: 
+			if quad.goal: 
+				return -1000
+			return 1000
 		return quad.samples 
 
-	def samplePoint(self, limit, collision):
+	def samplePoint(self, limit, collision, goalDirected):
 		sample, closest, quads = None, None, None
 		if self.rect.area() < limit or not self.points: 
 			sample, closest, quads = self.rect.sample(), None, [self]
 		else: 
 			if not self.quads and self.points: 
 				self.split(limit)
-			small = min(self.weight(quad) for quad in self.quads)
-			mins = list(idx for (idx, quad) in enumerate(self.quads) if self.weight(quad) == small)
+			small = min(self.weight(quad, goalDirected) for quad in self.quads)
+			mins = list(idx for (idx, quad) in enumerate(self.quads) if self.weight(quad, goalDirected) == small)
 			# print("mins", small, mins, [self.weight(quad) for quad in self.quads])
 			quad = self.quads[random.choice(mins)]
-			sample, closest, quads = quad.samplePoint(limit, collision)
+			sample, closest, quads = quad.samplePoint(limit, collision, goalDirected)
 			if sample:
 				quads += [self]
 				if not closest: 
@@ -183,8 +183,8 @@ class QuadTree():
 					return True
 		return False
 
-	def samplePoint(self, step): 
-		p, c, quads = self.root.samplePoint(self.limit, lambda p, c=None: self.collision(p, c))
+	def samplePoint(self, step, goalDirected=False): 
+		p, c, quads = self.root.samplePoint(self.limit, lambda p, c=None: self.collision(p, c), goalDirected)
 		# print(self.getQuads(VectorN( (6,0,0) )) )
 		if p: 
 			if (p-c).magnitude() > step: 
