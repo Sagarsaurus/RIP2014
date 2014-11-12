@@ -1,5 +1,6 @@
 from quad_tree import *
 import tkinter as tk
+import random
 from util import *
 import math
 
@@ -17,10 +18,12 @@ class RRT:
 		self.path = []
 		self.closest = float('inf')
 
-	def grow_baseline(self, step, goalApproximation = 0.1, restraintLine):
+	def grow_baseline(self, step, goalApproximation = 0.1, yRestraint = None):
 		p, c = self.qt.samplePoint(step)
 		if p and c:
 			if not self.arm.ArmCollisionCheck(p.components, self.obstacles): 
+				if yRestraint is not None and not self.TS_New_Config(p, c):
+					return None, None
 				self.qt.addPoint(p)
 				new = self.arm.getEnd()
 				self.arm.setQ(c.components)
@@ -38,8 +41,33 @@ class RRT:
 				return self.worldTree.V[-1], self.worldTree.E[-1]
 		return None, None
 
-	def computeTaskError(q_s, q_near):
-		
+	def RGD_New_Cofig(qs, qnear, epsilon = 0.00001, dMax = 1):
+		i, j = 0, 0
+		dx_error = ComputeError(qs, qnear)
+		while i < I and j < J and dx_error.magnitude() > epsilon:
+			i += 1
+			j += 1
+			qs2 = qs #plus random displacement
+			dx_error2 = ComputeError(qs2, qnear)
+			if dx_error2 < dx_error:
+				j = 0
+				qs = qs2
+				dx_error = dx_error2
+			if dx_error < epsilon:
+				return not self.arm.ArmCollisionCheck(qs.components, self.obstacles)
+		return False
+
+	def TS_New_Config(qs, qnear):
+		C = [[1,0,0],[0,0,0],[0,0,1]]
+		J =  self.arm.jacobian(qnear)
+		Jt = self.arm.jacobianT(qnear)
+		dq = qs - qnear
+		dqT = [[dq.components[0]],[[dq.components[1]],[[dq.components[2]]]
+		dq2 = dq - VectorN(matMult(Jt, matMult(C, matMult(J, dqT))))
+		return RGD_New_Cofig(qs, qnear)
+
+	def ComputeError(qs, qnear):
+		pass
 
 obstacles = [CircleObstacle(200,225,100)]#, CircleObstacle(150,600,120)]
 # obstacles = [RectangleObstacle(200, 220, 1.57, 100, 100)]

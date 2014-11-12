@@ -1,6 +1,17 @@
 import math
 from util import *
 
+def matMult(a, b):
+	l1 = len(a)
+	l2 = len(a[0])
+	l3 = len(b)
+	l4 = len(b[1])
+	c = [[0 for x in range(l1)] for x in range(l4)]
+	if l2 == l3:
+		for i in range(l1):
+			for j in range(l3):
+
+
 class RobotArm:
 
 	def __init__(self, l, q=(0,0,0)):
