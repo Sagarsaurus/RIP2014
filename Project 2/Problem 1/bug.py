@@ -86,6 +86,8 @@ class App:
         bugAlg.run(bug)
         print("hi")
 
+        totalDistance = 0
+        euclidieanDist = (bugAlg.goal - bugAlg.start).magnitude()
         bugPath = []
         for i in range(0, len(bugAlg.path) - 1):
             v1 = bugAlg.path[i]
@@ -98,6 +100,11 @@ class App:
                 bugPath.append(v1 + norm * i)
                 i += 1
             bugPath.append(v2)
+            totalDistance += mag
+
+        print("Total Distance: ", totalDistance)
+        print("Euclidiean Distance: ", euclidieanDist)
+        print("Ratio: ", float(totalDistance) / float(euclidieanDist))
 
         self.path_to_tuples = []
 
