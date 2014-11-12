@@ -86,6 +86,8 @@ class App:
         bugAlg.run(bug)
         print("hi")
 
+        totalDistance = 0
+        euclidieanDist = (bugAlg.goal - bugAlg.start).magnitude()
         bugPath = []
         for i in range(0, len(bugAlg.path) - 1):
             v1 = bugAlg.path[i]
@@ -98,6 +100,11 @@ class App:
                 bugPath.append(v1 + norm * i)
                 i += 1
             bugPath.append(v2)
+            totalDistance += mag
+
+        print("Total Distance: ", totalDistance)
+        print("Euclidiean Distance: ", euclidieanDist)
+        print("Ratio: ", float(totalDistance) / float(euclidieanDist))
 
         self.path_to_tuples = []
 
@@ -134,11 +141,11 @@ class App:
             r = obstacle.r
             self.canvas.create_oval(obstacle.x-r + xOffset, yMax - (obstacle.y-r + yOffset), obstacle.x+r + xOffset, yMax -(obstacle.y+r + yOffset))
         elif isinstance(obstacle, PolygonObstacle):
-            points = [Vector2(xOffset + x.y, yMax - (yOffset + x.y)).to_tuple() for x in obstacle.points]
-            self.canvas.create_polygon(points);
+            points = [Vector2(xOffset + x.x, yMax - (yOffset + x.y)).to_tuple() for x in obstacle.points]
+            self.canvas.create_polygon(points, width='0.25');
         elif isinstance(obstacle, RectangleObstacle):
             self.draw_obstacle(obstacle.wrapped)
 
 root = tk.Tk()
-app = App(root, 1, 2, 1024, 768)
+app = App(root, 2, 2, 1024, 768)
 root.mainloop()

@@ -185,19 +185,14 @@ class App:
         mapSize=(230,150)
         minDistance=30
 
-        #fmg=FieldMapGenerator(mapSize, goal, obstacles,minDistance)
-        #fmg.repulsionField()
 
         a=Agent(start,goal,mapSize,obstacles,minDistance)
-        #FMG=FieldMapGenerator(mapSize, goal, obstacles,minDistance)
-        #img=FMG.computeField()
+
         plan,fmap=a.run()
         fmap=fit(fmap,255)
-        print(len(plan))
+        print(len(plan))/()
         for elt in plan:
-            fmap[elt[1]][elt[0]]=255#-fmap[elt[1]][elt[0]]
-
-        cv2.imwrite("test.jpg",np.array(fmap))
+            fmap[elt[1]][elt[0]]=255
 
         bugPath = []
         for i in range(0, len(plan) - 1):
@@ -252,6 +247,23 @@ class App:
         elif isinstance(obstacle, RectangleObstacle):
             self.draw_obstacle(obstacle.wrapped)
 
-root = tk.Tk()
-app = App(root, 1, 2, 1024, 768)
-root.mainloop()
+#root = tk.Tk()
+#app = App(root, 1, 2, 1024, 768)
+#root.mainloop()
+            
+obstacles=[CircleObstacle(50,60,20),CircleObstacle(150,75,35),CircleObstacle(150,130,10)]
+#,CircleObstacle(150,130,10)
+start=(10,60)
+goal=(210,75)
+mapSize=(230,150)
+minDistance=30
+
+a=Agent(start,goal,mapSize,obstacles,minDistance)
+plan,fmap=a.run()
+
+for elt in plan:
+    fmap[elt[1]][elt[0]]=255
+    
+fmap=fit(fmap,255)
+
+cv2.imwrite("test2.jpg",np.array(fmap))
