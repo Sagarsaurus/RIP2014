@@ -6,14 +6,15 @@ import math
 class RRT:
 	def __init__(self, space, limit, arm, obstacles, start, goal, constrain,  precision): 
 		self.space = space
-		self.start = VectorN(RobotArm.inverseKinematics(start.to_tuple(), arm.l))
-		self.goal = VectorN(RobotArm.inverseKinematics(goal.to_tuple(), arm.l))
+		self.start = start #VectorN(RobotArm.inverseKinematics(start.to_tuple(), arm.l))
+		self.goal = goal #VectorN(RobotArm.inverseKinematics(goal.to_tuple(), arm.l))
 		self.worldGoal = goal
 		self.obstacles = obstacles
 		self.qt = QuadTree(space, limit, obstacles, self.start, self.goal)
-		self.worldTree = Tree(start, precision)
-		self.configTree =  Tree(self.start, precision)
 		self.arm = arm
+		arm.setQ(start)
+		self.worldTree = Tree(arm.getEnd(), precision)
+		self.configTree = Tree(self.start, precision)
 		self.pathFound = False
 		self.path = []
 		self.closest = float('inf')
@@ -68,7 +69,7 @@ obstacles = [CircleObstacle(200,225,100)]#, CircleObstacle(150,600,120)]
 # obstacles = [RectangleObstacle(200, 220, 1.57, 100, 100)]
 obstacles = []
 space = ((-2*math.pi,)*3, (4*math.pi,)*3)
-rrt = RRT(space, 0.00001, RobotArm((200, 200, 100)), obstacles, VectorN((260, 130, 1)), VectorN((-140, 160, -2)), Line(Vector2(0,130), Vector2(1, 130) ), 8 )
+rrt = RRT(space, 0.00001, RobotArm((200, 200, 100)), obstacles, VectorN((1.5707, -1.2308, 0)), VectorN((1.5707, 1.2308, 0)), Line(Vector2(0,300), Vector2(1, 300) ), 8 )
 
 xOffset = 500
 yOffset = 300
