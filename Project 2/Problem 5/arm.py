@@ -36,7 +36,9 @@ class RobotArm:
 		self.link1 = Line(VectorN( (0.0, 0.0) ), self.a1)
 		self.link2 = Line(self.a1, self.a2)
 		self.link3 = Line(self.a2, self.a3)
-		self.theta = sum(q)
+		self.theta = math.fmod(sum(q), 2*math.pi)
+		if self.theta < 0:
+			self.theta = self.theta + 2*math.pi
 		return self
 
 	def inverseKinematics(x, l):
