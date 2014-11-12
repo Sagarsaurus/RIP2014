@@ -21,9 +21,10 @@ class RobotArm:
 
 	def ArmCollisionCheck(self, q, obstacles):
 		self.setQ(q)
-		r1 = raycast(self.link1.start, self.link1.move, obstacles, limitedRay = True)
-		r2 = raycast(self.link2.start, self.link2.move, obstacles, limitedRay = True)
-		r3 = raycast(self.link3.start, self.link3.move, obstacles, limitedRay = True)
+
+		r1 = raycast(Vector2(self.link1.start[0], self.link1.start[1]), Vector2(self.link1.move[0], self.link1.move[1]) , obstacles, limitedRay = True)
+		r2 = raycast(Vector2(self.link2.start[0], self.link2.start[1]), Vector2(self.link2.move[0], self.link2.move[1]) , obstacles, limitedRay = True)
+		r3 = raycast(Vector2(self.link3.start[0], self.link3.start[1]), Vector2(self.link3.move[0], self.link3.move[1]) , obstacles, limitedRay = True)
 		r = r1 + r2 + r3
 		return len(r) != 0
 
@@ -42,9 +43,9 @@ class RobotArm:
 		X2 = x[0] - l[2] * math.cos(x[2])
 		Y2 = x[1] - l[2] * math.sin(x[2])
 		det = X2**2 + Y2**2
-		Q1 = math.acos(X2 / math.sqrt(det)) + math.acos((l[0]**2 - l[1]**2 + det) / (2 * l[0] * math.sqrt(det)))
-		Q2 = math.pi + math.acos((l[0]**2 + l[1]**2 - det)/(2 * l[0] * l[1]))
-		Q3 = x[2] - Q1 - Q2
+		Q1 = math.fmod(math.acos(X2 / math.sqrt(det)) + math.acos((l[0]**2 - l[1]**2 + det) / (2 * l[0] * math.sqrt(det))), 2*math.pi)
+		Q2 = math.fmod(math.pi + math.acos((l[0]**2 + l[1]**2 - det)/(2 * l[0] * l[1])), 2*math.pi)
+		Q3 = math.fmod(x[2] - Q1 - Q2, 2*math.pi)
 		return Q1, Q2, Q3
 
 	def getEnd(self):
