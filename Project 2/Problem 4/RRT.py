@@ -38,6 +38,9 @@ class RRT:
 				return self.worldTree.V[-1], self.worldTree.E[-1]
 		return None, None
 
+	def computeTaskError(q_s, q_near):
+		
+
 obstacles = [CircleObstacle(200,225,100)]#, CircleObstacle(150,600,120)]
 # obstacles = [RectangleObstacle(200, 220, 1.57, 100, 100)]
 # obstacles = []
