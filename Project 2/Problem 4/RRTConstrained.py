@@ -25,7 +25,7 @@ class RRT:
 		x = Vector2(p[0], p[1])
 		if p and c:
 			p = self.adjust(p)
-			if not self.arm.ArmCollisionCheck(p.components, self.obstacles): 
+			if p and not self.arm.ArmCollisionCheck(p.components, self.obstacles): 
 				# print(p)
 				self.qt.addPoint(p)
 				new = self.arm.getEnd()
@@ -40,12 +40,18 @@ class RRT:
 		wp = self.arm.setQ(p.components).getEnd()
 		wp = Vector2(wp[0], wp[1])
 		circle = CircleObstacle(0,0,wp.magnitude())
-		points = circle.raycast(self.constrain.start, self.constrain.move)
-		closest = points[0]
-		offset = closest.angle() - wp.angle()
-		newp = VectorN( (p.components[0]+offset, ) + tuple(p[1:]) )
-		# print( points, offset, self.arm.setQ(newp.components).getEnd(), newp)
-		return newp
+		points = circle.raycast(self.constrain.start, self.constrain.move) + circle.raycast(self.constrain.start, self.constrain.move * -1)
+		# print(wp, points)
+		if points: 
+			distances = [ (wp - c).magnitude() for c in points]
+			minim = distances.index(min(distances))
+			# print(distances, )
+			closest = points[minim]
+			offset = closest.angle() - wp.angle()
+			newp = VectorN( (p.components[0]+offset, ) + tuple(p[1:]) )
+			# print( points, offset, self.arm.setQ(newp.components).getEnd(), newp)	
+			return newp
+		return None
 
 	def goalNear(self, p): 
 		dist = (p - self.worldGoal).magnitude()
@@ -115,7 +121,7 @@ class App:
 			self.canvas.delete(line) 
 
 	def animate_search(self): 
-		p, e, x = rrt.grow_baseline(0.02)
+		p, e, x = rrt.grow_baseline(0.2)
 		# print(p)
 		if p:
 			self.draw_dot(p.value[0], p.value[1], 1)
