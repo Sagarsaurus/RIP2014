@@ -66,15 +66,16 @@ yOffset = 300
 yMax = 700
 
 class App:
-	def __init__(self, master, rrt, w, h):
+	def __init__(self, master, rrt, w, h, goalDirected):
 		self.w = w
 		self.h = h
 		self.master = master
+		self.goalDirected = goalDirected
 		frame = tk.Frame(master)
 		frame.pack()
 		self.canvas = tk.Canvas(master, width=w, height=h)
 		self.canvas.pack()
-		self.master.after(1000, self.animate_search)
+		self.master.after(3000, self.animate_search)
 		self.draw_world()
 		print(rrt.goal)
 
@@ -115,7 +116,7 @@ class App:
 			self.canvas.delete(line) 
 
 	def animate_search(self): 
-		p, e = rrt.grow_baseline(0.02, True)
+		p, e = rrt.grow_baseline(0.02, self.goalDirected)
 		# print(p)
 		if p:
 			self.draw_dot(p.value[0], p.value[1], 1)
@@ -146,5 +147,5 @@ class App:
 			self.canvas.create_line(e.l.x + xOffset, yMax - (e.l.y + yOffset), e.r.x + xOffset, yMax - (e.r.y + yOffset))
 
 root = tk.Tk()
-app = App(root, rrt, 1024, 768)
+app = App(root, rrt, 1024, 768, True)
 root.mainloop()

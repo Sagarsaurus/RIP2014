@@ -83,7 +83,7 @@ class App:
 		frame.pack()
 		self.canvas = tk.Canvas(master, width=w, height=h)
 		self.canvas.pack()
-		self.master.after(1000, self.animate_search)
+		self.master.after(3000, self.animate_search)
 		self.draw_world()
 		print(rrt.goal)
 
@@ -124,7 +124,7 @@ class App:
 			self.canvas.delete(line) 
 
 	def animate_search(self): 
-		p, e, x = rrt.grow_baseline(0.02, True)
+		p, e, x = rrt.grow_baseline(0.05, True)
 		# print(p)
 		if p:
 			self.draw_dot(p.value[0], p.value[1], 1)
